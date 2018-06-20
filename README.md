@@ -6,7 +6,9 @@ A collection of ReasonML and BuckleScript rules and tools for [Bazel](https://ba
 > Note: this is alpha software! I'm building it to properly integrate a ReasonML
 > application into a bigger project that builds with Bazel.
 
-This projet relies on `nix` being installed in your system to 
+This projet relies on `nix` being installed in your system to pull in the
+ReasonML tooling. BuckleScript will be compiled _from scratch_ so expect about
+~5 minutes for your first `bazel build //...` to complete.
 
 ## Getting Started
 
