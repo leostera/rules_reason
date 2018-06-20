@@ -1,7 +1,8 @@
+package(default_visibility = ["//reason:__subpackages__"])
+
 load("//reason/private:utils.bzl", "unpack_filegroup")
 
 genrule(
-  visibility = ["//visibility:public"],
   name = "make_patched_ocaml",
   cmd = """\
       #!/bin/bash
@@ -44,7 +45,7 @@ genrule(
       pushd $$pkg_root;
 
         # build the world!
-        PATH=$$PATH:$$(pwd)/vendor/ocaml/bin make -j1;
+        PATH=$$(pwd)/vendor/ocaml/bin:$$PATH make;
 
         # put files in the right place (locally, doesn't do any global copies)
         make install;
@@ -59,7 +60,6 @@ genrule(
     )
 
 genrule(
-  visibility = ["//visibility:public"],
   name = "bundle_targets",
   cmd = """\
 
@@ -82,7 +82,6 @@ genrule(
   )
 
 genrule(
-	visibility = ["//visibility:public"],
 	name = "unpack_binaries",
 	cmd = """\
       #!/bin/bash
@@ -595,12 +594,6 @@ ml_files = [
       "lib/ocaml/js_array.cmj",
       "lib/ocaml/js_array.cmt",
       "lib/ocaml/js_array.ml",
-      "lib/ocaml/js_boolean.cmi",
-      "lib/ocaml/js_boolean.cmj",
-      "lib/ocaml/js_boolean.cmt",
-      "lib/ocaml/js_boolean.cmti",
-      "lib/ocaml/js_boolean.ml",
-      "lib/ocaml/js_boolean.mli",
       "lib/ocaml/js_cast.cmi",
       "lib/ocaml/js_cast.cmj",
       "lib/ocaml/js_cast.cmt",
@@ -950,7 +943,6 @@ ml_files = [
     ]
 
 unpack_filegroup(
-  visibility = ["//visibility:public"],
   name = "stdlib.ml",
   tar = ":bs_platform",
   files = ml_files

@@ -14,7 +14,7 @@ nix_repositories(
 ###
 load("@com_github_ostera_rules_reason//reason:def.bzl", "reason_register_toolchains")
 reason_register_toolchains(
-    bs_sha256 = "8a1c9fa6f6385708b5cc6fe162a6db2b971ee5ebbe2614e3a1062b6f25d8be27",
-    bs_version = "2ae5ef1ebb94466f7e0e52d21efa337af4b1dba4",
+    bs_sha256 = "3072a709d831285ab5e16eb906aaa4e56821321adc4c7f7c0eb7aa1df7bad7a6",
+    bs_version = "493c4c45b5c248a39962af60cba913f425d57420",
     nixpkgs_revision = "d91a8a6ece07f5a6df82aa5dc02030d9c6724c27",
     )
