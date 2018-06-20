@@ -6,11 +6,6 @@ load(
     "bs_module"
 )
 
-filegroup(
-    name = "bs_config",
-    srcs = ["bsconfig.json"],
-    )
-
 reason_module(
     name = "tldr",
     srcs = glob(["*.re"]),
@@ -18,7 +13,7 @@ reason_module(
 
 bs_module(
     name = "src",
-    config = "//examples/app:bs_config",
+    config = "//:bs_config",
     srcs = [ ":tldr" ],
     deps = [ "//examples/app/Effect", "//examples/app/Coax", "//examples/app/Model" ],
     )

@@ -15,7 +15,7 @@ reason_module(
 bs_module(
     visibility = ["//examples/app:__subpackages__"],
     name = "Effect",
-    config = "//examples/app:bs_config",
+    config = "//:bs_config",
     srcs = [ ":srcs" ],
     deps = [ "//examples/app/Model", "//examples/app/Coax" ],
     )
