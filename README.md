@@ -18,14 +18,14 @@ rules_reason_revision = "c2baf995e52727110bc5408eb896ea518bf267f6"
 
 http_archive(
     name = "com_github_ostera_rules_reason",
-		# fill this in with the sha256 bazel gives you for proper hermeticity
-		sha256 = "",
-		strip_prefix = "rules_reason-%s" %s (rules_reason_revision, ),
+    # fill this in with the sha256 bazel gives you for proper hermeticity
+    sha256 = "",
+    strip_prefix = "rules_reason-%s" %s (rules_reason_revision, ),
     urls = [
-			"https://github.com/ostera/rules_reason/archive/%s.tar.gz" % (
-				rules_reason_revision,
-			),
-		],
+      "https://github.com/ostera/rules_reason/archive/%s.tar.gz" % (
+        rules_reason_revision,
+      ),
+    ],
 )
 
 load("@com_github_ostera_rules_reason//reason:def.bzl", "reason_register_toolchains")
@@ -44,8 +44,8 @@ it_. This means that you need to have that file at the root of your project.
 ```python
 # BUILD file at //...
 filegroup(
-	name = "bsconfig",
-	srcs = ["bsconfig.json"],
+  name = "bsconfig",
+  srcs = ["bsconfig.json"],
 )
 
 # BUILD file somewhere in your sources!
@@ -56,7 +56,7 @@ reason_module(
 
 bs_module(
   name = "srcs.js",
-	config = ["//:bsconfig"],
+  config = ["//:bsconfig"],
   srcs = [":srcs.re"],
   deps = [":deps"],
 )
