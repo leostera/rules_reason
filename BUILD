@@ -1,6 +1,5 @@
-package(default_visibility = ["//examples:__subpackages__"])
-
 filegroup(
+visibility = ["//examples:__subpackages__"],
     name = "bs_config",
     srcs = ["bsconfig.json"],
     )

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+bazel build //reason:docs
+
+git checkout gh-pages
