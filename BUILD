@@ -8,6 +8,11 @@ alias(
 )
 
 alias(
+  name = "bsb",
+  actual = "//reason/private/bs:bsb.exe"
+)
+
+alias(
   name = "bsc",
   actual = "//reason/private/bs:bsc.exe"
 )
