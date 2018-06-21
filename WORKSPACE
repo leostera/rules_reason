@@ -1,11 +1,6 @@
 workspace(name = "com_github_ostera_rules_reason")
 
 local_repository(
-  name = "docs",
-  path = "docs",
-)
-
-local_repository(
   name = "examples",
   path = "examples",
 )
@@ -28,22 +23,3 @@ reason_register_toolchains(
     bs_version = "493c4c45b5c248a39962af60cba913f425d57420",
     nixpkgs_revision = "d91a8a6ece07f5a6df82aa5dc02030d9c6724c27",
     )
-
-###
-### Enable Skydocs
-###
-git_repository(
-    name = "io_bazel_rules_sass",
-    remote = "https://github.com/bazelbuild/rules_sass.git",
-    tag = "0.0.3",
-)
-load("@io_bazel_rules_sass//sass:sass.bzl", "sass_repositories")
-sass_repositories()
-
-git_repository(
-    name = "io_bazel_skydoc",
-    remote = "https://github.com/bazelbuild/skydoc.git",
-    tag = "0.1.4",
-)
-load("@io_bazel_skydoc//skylark:skylark.bzl", "skydoc_repositories")
-skydoc_repositories()
