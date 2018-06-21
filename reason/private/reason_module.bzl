@@ -38,23 +38,17 @@ def _reason_module_impl(ctx):
           ),
       ReasonModuleInfo(
           name=ctx.label.name,
-          deps=ctx.attr.deps,
           srcs=ctx.attr.srcs,
           outs=outputs,
           )
       ]
 
-"""
-A reason_module is a ReasonML file that will be compiled down to a binary
-AST representation for further processing.
-"""
 reason_module = rule(
   attrs = {
     "srcs": attr.label_list(
         allow_files = [RE_EXT, REI_EXT],
         mandatory = True
         ),
-    "deps": attr.label_list(allow_files = False),
     "toolchain": attr.label(
         default = "@com_github_ostera_rules_reason//reason/toolchain:bs-platform",
         providers = [platform_common.ToolchainInfo],
@@ -62,3 +56,18 @@ reason_module = rule(
   },
   implementation = _reason_module_impl
 )
+"""A reason_module is a ReasonML file that will be compiled down to a ML file
+for further processing. This allows us to reuse BuckleScript or the Ocaml
+toolchain afterwards.
+
+You can think of this as a very tiny compilation step where we go from ReasonML
+to Ocaml by calling `refmt` on every source file and saving the output code for
+further compilation.
+
+Args:
+  srcs: The list of .re or .rei files, typically `glob(["*.re", "*.rei"])`
+  toolchain: The bs-platform that will be used to call `refmt` on files.
+
+    If no toolchain is provided, the default registered by this project will be
+    chosen.
+"""

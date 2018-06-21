@@ -6,10 +6,11 @@ def reason_compile(ctx, refmt, src, out):
   Javascript, straight into Ocaml bytecode, optimized native code, or even web
   assembly.
 
-  @ctx    is a context object
-  @refmt  is the refmt tool
-  @src    is the source ReasonML file
-  @out    is the output ML file
+  Args:
+    ctx: is a context object
+    refmt: is the refmt tool
+    src: is the source ReasonML file
+    out: is the output ML file
   """
   command = "{refmt} --print ml {src} > {out}".format(
       refmt = refmt.path,

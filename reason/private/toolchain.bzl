@@ -31,12 +31,12 @@ _reason_toolchain = rule(
     )
 
 def reason_toolchain(name, stdlib, bsc, refmt, **kwargs):
-  """
-  The basic ReasonML toolchain includes:
+  """The minimum ReasonML toolchain.
 
-  @refmt    the standard ReasonML reformatting tool
-  @bsc      the BuckleScript compiler
-  @stdlib   a filegroup with the standard library the compiler is using
+  Args:
+    refmt: the standard ReasonML reformatting tool
+    bsc: the BuckleScript compiler
+    stdlib: a filegroup with the standard library the compiler is using
   """
 
   impl_name = name + "-platform"

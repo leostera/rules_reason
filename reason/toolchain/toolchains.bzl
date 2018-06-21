@@ -1,3 +1,11 @@
+"""Toolchain
+
+Find below macros to register toolchains for ReasonML and BuckleScript.
+
+A default `declare_default_toolchain()` macro is included. It requires `nix` to
+be installed in your system.
+"""
+
 load(
     "//reason/private:toolchain.bzl",
     _reason_toolchain = "reason_toolchain",
@@ -100,15 +108,33 @@ def _declare_toolchain_repositories(
     build_file_content = BS_BUILD_FILE
     )
 
-def _register_toolchains():
-  native.register_toolchains(
-      "@com_github_ostera_rules_reason//reason/toolchain:host",
-  )
-
 def reason_register_toolchains(nixpkgs_revision, bs_version, bs_sha256):
+  """
+  Declares a ReasonML/BuckleScript toolchain to use, downloads dependencies and
+  initializes other repositories (such as `@nixpkgs`, `@reason`, and `@bs`).
+
+  Args:
+    nixpkgs_revision: a tag or commit sha256 for the specific version of nixpkgs
+                      from where to install the appropriate ReasonML binaries
+    bs_version: a commit sha256 for the specific version of BuckleScript code
+    bs_sha256: the integrity checksum to verify the BuckleScript source
+  """
   _declare_toolchain_repositories(nixpkgs_revision, bs_version, bs_sha256)
 
-def declare_toolchains():
+def declare_default_toolchain():
+  """The default ReasonML/BuckleScript toolchain.
+
+  This toolchain will register as `bs-platform` and will include the `nix`
+  managed ReasonML tools (such as `refmt`) and the `bazel` compiled BuckleScript
+  and patched Ocaml compilers.
+
+  It defaults to:
+
+  * `stdlib = "//reason/private/bs:stdlib.ml"`
+  * `bsc = "//reason/private/bs:bsc.exe"`
+  * `refmt = "//reason/private/bs:refmt.exe"`
+
+  """
   _reason_toolchain(
       name = "bs",
       stdlib = "//reason/private/bs:stdlib.ml",
