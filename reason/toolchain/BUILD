@@ -1,5 +1,5 @@
 package(default_visibility = ["//visibility:public"])
 
-load(":toolchains.bzl", "declare_toolchains")
+load(":toolchains.bzl", "declare_default_toolchain")
 
-declare_toolchains()
+declare_default_toolchain()
