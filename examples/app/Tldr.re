@@ -20,6 +20,8 @@ let reducer = (state, action) =>
 
 let effects = [Log.make()];
 
+let button = Components.Button.make([]);
+
 let app: App.t(state, action) = {
   initialAction: Bootstrap(initialState),
   effects,

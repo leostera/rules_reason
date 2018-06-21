@@ -1,0 +1,10 @@
+####{BSB GENERATED: NO EDIT
+B lib/bs
+FLG -open Tldr
+FLG -ppx '/private/var/tmp/_bazel_ostera/6fa297b166dc257f2412c62f414c3277/execroot/examples/bazel-out/darwin-fastbuild/genfiles/external/com_github_ostera_rules_reason/reason/private/bs/reactjs_jsx_ppx_2.exe'
+FLG -ppx /private/var/tmp/_bazel_ostera/6fa297b166dc257f2412c62f414c3277/execroot/examples/bazel-out/darwin-fastbuild/genfiles/external/com_github_ostera_rules_reason/reason/private/bs/bsppx.exe
+S /Users/ostera/repos/github.com/ostera/rules_reasonml/examples/node_modules/bs-platform/lib/ocaml
+B /Users/ostera/repos/github.com/ostera/rules_reasonml/examples/node_modules/bs-platform/lib/ocaml
+FLG -nostdlib -no-alias-deps -color always
+FLG -w -30-40+6+7+27+32..39+44+45+101
+####BSB GENERATED: NO EDIT}

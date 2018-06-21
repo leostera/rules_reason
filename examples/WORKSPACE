@@ -1,14 +1,23 @@
-workspace( name="examples" )
+workspace(name="examples")
 
 ###
 ### Reason Rules!
 ###
 
 local_repository(
-    name = "com_github_ostera_rules_reason",
-    path = "../",
-    )
+   name = "com_github_ostera_rules_reason",
+   path = "../",
+   )
 
+# rules_reason_version = "f8b956b147bfcf22c90480e7ebea32e6769c1fe0" # HEAD
+# 
+# http_archive(
+#     name = "com_github_ostera_rules_reason",
+#     sha256 = "",
+#     strip_prefix = "rules_reason-%s" % (rules_reason_version,),
+#     urls = ["https://github.com/ostera/rules_reason/archive/%s.zip" % (rules_reason_version,)],
+#     )
+# 
 ###
 ### Nix Repositories
 ###
@@ -37,5 +46,4 @@ reason_register_toolchains(
     bs_version = "939ef1e1e874c80ff9df74b16dab1dbe2e2df289",
     nixpkgs_revision = "d91a8a6ece07f5a6df82aa5dc02030d9c6724c27",
     )
-
 

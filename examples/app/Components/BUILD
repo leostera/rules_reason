@@ -1,13 +1,13 @@
 package(default_visibility = ["//app:__subpackages__"])
 
 reason_module(
-    name = "tldr",
+    name = "src",
     srcs = glob(["*.re"]),
     )
 
 bs_module(
-    name = "src",
+    name = "Components",
     config = "//:bs_config",
-    srcs = [ ":tldr" ],
-    deps = [ "//app/Effect", "//app/Coax", "//app/Model", "//app/Components" ],
+    srcs = [ ":src" ],
+    deps = [ ],
     )
