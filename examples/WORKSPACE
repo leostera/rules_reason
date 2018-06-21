@@ -33,7 +33,9 @@ load(
     )
 
 reason_register_toolchains(
-    bs_sha256 = "3072a709d831285ab5e16eb906aaa4e56821321adc4c7f7c0eb7aa1df7bad7a6",
-    bs_version = "493c4c45b5c248a39962af60cba913f425d57420",
+    bs_sha256 = "db3f37eb27bc1653c3045e97adaa83e800dff55ce093d78ddfe85e85165e2125",
+    bs_version = "939ef1e1e874c80ff9df74b16dab1dbe2e2df289",
     nixpkgs_revision = "d91a8a6ece07f5a6df82aa5dc02030d9c6724c27",
     )
+
+
