@@ -35,7 +35,7 @@ genrule(
   #!/bin/bash
 
   # Copy binaries to the output location
-  cp external/reason/bin/* $$(dirname $(location :refmt));
+  cp external/reason-cli/bin/* $$(dirname $(location :refmt));
 
   \"\"\",
   srcs = [ ":bin" ],
@@ -133,7 +133,7 @@ def _declare_toolchain_repositories(
       )
 
   nixpkgs_package(
-      name = "reason",
+      name = "reason-cli",
       attribute_path = "ocamlPackages.reason",
       build_file_content = REASON_BUILD_FILE,
       repository = "@reason-nixpkgs",

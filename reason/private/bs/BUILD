@@ -1,4 +1,4 @@
-package(default_visibility = ["//reason:__subpackages__"])
+package(default_visibility = ["//:__subpackages__"])
 
 load("//reason/private:utils.bzl", "unpack_filegroup")
 

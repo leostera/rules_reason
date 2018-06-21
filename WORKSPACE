@@ -1,4 +1,4 @@
-workspace(name = "com_github_ostera_rules_reason")
+workspace( name = "com_github_ostera_rules_reason" )
 
 local_repository(
     name = "examples",
