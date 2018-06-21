@@ -14,3 +14,9 @@ load(
     "@com_github_ostera_rules_reason//reason/private:bs_module.bzl",
     "bs_module",
 )
+
+# Binary Targets
+load(
+    "@com_github_ostera_rules_reason//reason/private:node_binary.bzl",
+    "node_binary",
+)

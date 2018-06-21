@@ -4,6 +4,7 @@ def _reason_toolchain_impl(ctx):
           stdlib = ctx.attr.stdlib,
           bsc = ctx.file.bsc,
           refmt = ctx.file.refmt,
+          node = ctx.file.node,
           )
       ]
 
@@ -27,16 +28,23 @@ _reason_toolchain = rule(
             executable = True,
             cfg = "target",
             ),
+        "node": attr.label(
+            mandatory = True,
+            allow_single_file = True,
+            executable = True,
+            cfg = "target",
+            ),
         },
     )
 
-def reason_toolchain(name, stdlib, bsc, refmt, **kwargs):
+def reason_toolchain(name, stdlib, bsc, refmt, node, **kwargs):
   """The minimum ReasonML toolchain.
 
   Args:
-    refmt: the standard ReasonML reformatting tool
-    bsc: the BuckleScript compiler
     stdlib: a filegroup with the standard library the compiler is using
+    bsc: the BuckleScript compiler
+    refmt: the standard ReasonML reformatting tool
+    node: the NodeJS binary
   """
 
   impl_name = name + "-platform"
@@ -46,6 +54,7 @@ def reason_toolchain(name, stdlib, bsc, refmt, **kwargs):
       stdlib = stdlib,
       bsc = bsc,
       refmt = refmt,
+      node = node,
   )
 
   native.toolchain(

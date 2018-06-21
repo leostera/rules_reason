@@ -181,4 +181,5 @@ def declare_default_toolchain():
       stdlib = "//reason/private/bs:stdlib.ml",
       bsc = "//reason/private/bs:bsc.exe",
       refmt = "//reason/private/bs:refmt.exe",
+      node = "@node//:node",
       )

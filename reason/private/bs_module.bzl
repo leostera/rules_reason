@@ -70,6 +70,8 @@ def _bs_module_impl(ctx):
       # TODO(@ostera): make this configurable, we don't need it by default
       "-bs-package-name", jsfile.dirname,
 
+      "-bs-suffix",
+
       # TODO(@ostera): this should be configurable from another rule
       # in essence this modules will not determine what the full bundle
       # compiles to, but the other way around

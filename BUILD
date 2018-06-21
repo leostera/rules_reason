@@ -31,3 +31,9 @@ alias(
   name = "rtop",
   actual = "@reason-cli//:rtop"
 )
+
+filegroup(
+  name = "bsconfig",
+  srcs = ["bsconfig.json"],
+  visibility = ["//:__subpackages__"],
+)
