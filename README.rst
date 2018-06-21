@@ -27,6 +27,7 @@ Getting Started
 Begin by adding the following to your ``WORKSPACE``:
 
 .. code:: bzl
+
   # pick this revision from the repo
   workspace( name="my_project" )
 
@@ -75,6 +76,7 @@ Unfortunately ``bsc`` requires a ``bsconfig.json`` file at the place where you c
 it. This means that you need to have that file at the root of your project.
 
 .. code:: bzl
+
   # BUILD file at //...
   filegroup(
     name = "bsconfig",
@@ -97,6 +99,7 @@ it. This means that you need to have that file at the root of your project.
 You can access the ``rtop`` by running:
 
 .. code:: bash
+
   ostera/rules_reasonml λ bazel run @reason//:rtop
   (23:54:08) INFO: Current date is 2018-06-20
   (23:54:08) INFO: Analysed target @reason//:rtop (0 packages loaded).
@@ -178,6 +181,7 @@ ReasonML code.
 Example:
 
 .. code:: bzl
+
   # //my_app/BUILD
   load(
       "@com_github_ostera_rules_reason//reason:def.bzl",
@@ -236,6 +240,7 @@ Compile Ocaml code into Javascript.
 Example:
 
 .. code:: bzl
+
   load(
       "@com_github_ostera_rules_reason//reason:def.bzl",
       "reason_module",
