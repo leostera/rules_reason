@@ -3,6 +3,11 @@
 #
 
 alias(
+  name = "retool",
+  actual = "//retool:bin",
+)
+
+alias(
   name = "yarn",
   actual = "@yarn//:yarn",
 )
