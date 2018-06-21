@@ -1,6 +1,8 @@
 .. role:: param(kbd)
 .. role:: type(emphasis)
 .. role:: value(code)
+.. |mandatory| replace:: **mandatory value**
+
 
 ReasonML / BuckleScript Rules
 ==============================
