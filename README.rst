@@ -28,21 +28,24 @@ Begin by adding the following to your ``WORKSPACE``:
 
 .. code:: bzl
 
-  # pick this revision from the repo
-  workspace( name="my_project" )
+  workspace(name="example")
 
   ###
   ### Reason Rules!
   ###
 
-  rules_reason_version = "b9d89f9dd93865406a911dc123d3e47e60fe47ac" # HEAD
+  rules_reason_version = "f8b956b147bfcf22c90480e7ebea32e6769c1fe0" # HEAD
 
   http_archive(
       name = "com_github_ostera_rules_reason",
-      sha256 ="0aada93b7807269dc7060c1663f287b24f3606632444a55ffed16710552ded97",
+      sha256 = "" # fill in this SHA for proper hermeticity!,
       strip_prefix = "rules_reason-%s" % (rules_reason_version,),
       urls = ["https://github.com/ostera/rules_reason/archive/%s.zip" % (rules_reason_version,)],
       )
+
+  ###
+  ### Nix Repositories
+  ###
 
   load(
       "@com_github_ostera_rules_reason//reason/repositories:nix.bzl",
@@ -50,22 +53,29 @@ Begin by adding the following to your ``WORKSPACE``:
       )
 
   nix_repositories(
-      nix_version = "cd2ed701127ebf7f8f21d37feb1d678e4fdf85e5", # HEAD
+      # commit hash of the Nix tool version
+      nix_version = "cd2ed701127ebf7f8f21d37feb1d678e4fdf85e5",
       nix_sha256 = "084d0560c96bbfe5c210bd83b8df967ab0b1fcb330f2e2f30da75a9c46da0554",
       )
 
   ###
   ### Register Reason Toolchain
   ###
+
   load(
       "@com_github_ostera_rules_reason//reason:def.bzl",
       "reason_register_toolchains"
       )
+
   reason_register_toolchains(
+      # commit hash of the BuckleScript version
+      bs_version = "493c4c45b5c248a39962af60cba913f425d57420",
       bs_sha256 = "3072a709d831285ab5e16eb906aaa4e56821321adc4c7f7c0eb7aa1df7bad7a6",
-      bs_version = "493c4c45b5c248a39962af60cba913f425d57420", # HEAD
+
+      # commit hash of the NixPkgs version
       nixpkgs_revision = "d91a8a6ece07f5a6df82aa5dc02030d9c6724c27",
       )
+
 
 Use ``reason_module`` to compile a group of ``.re`` and ``.rei`` files into their
 corresponding ``.ml`` and ``.mli`` counterparts.
@@ -100,7 +110,7 @@ You can access the ``rtop`` by running:
 
 .. code:: bash
 
-  ostera/rules_reasonml λ bazel run @reason//:rtop
+  ostera/rules_reasonml/examples λ bazel run @reason//:rtop
   (23:54:08) INFO: Current date is 2018-06-20
   (23:54:08) INFO: Analysed target @reason//:rtop (0 packages loaded).
   (23:54:08) INFO: Found 1 target...
@@ -347,6 +357,6 @@ compilation unit from Ocaml to Javascript.
 | :param:`deps`                  | :type:`depset(File)`                       |
 +--------------------------------+--------------------------------------------+
 | A ``depset`` of all the BuckleScript modules files that the ``srcs`` depend |
-| on                                                                          | 
+| on                                                                          |
 |                                                                             |
 +--------------------------------+--------------------------------------------+
