@@ -108,3 +108,206 @@ Reason #
 1. 10k
 1. < your suggestion here! >
 
+## Rules
+
+
+### `reason_module`
+
+This compiles down ReasonML code into a representation that is friendly for
+BuckleScript or the default Ocaml compiler.
+
+Which one will it be compatible with is determined by how you write your
+ReasonML code.
+
++----------------------------+-----------------------------+---------------------------------------+
+| **Name**                   | **Type**                    | **Default value**                     |
++----------------------------+-----------------------------+---------------------------------------+
+| :param:`name`              | :type:`string`              | |mandatory|                           |
++----------------------------+-----------------------------+---------------------------------------+
+| A unique name for this rule.                                                                     |
+|                                                                                                  |
++----------------------------+-----------------------------+---------------------------------------+
+| :param:`srcs`              | :type:`string_list`         | |mandatory|                           |
++----------------------------+-----------------------------+---------------------------------------+
+| The sources of this library.                                                                     |
+|                                                                                                  |
+| The name of the sources will be preserved, and the outputs will replace the `.re` or `.rei`      |
+| extension with `.ml` or `.mli` correspondingly.                                                  |
+|                                                                                                  |
+| Other `bs_module` rules can depend on this library to compile it down to Javascript code.        |
+|                                                                                                  |
++----------------------------+-----------------------------+---------------------------------------+
+| :param:`toolchain`         | :type:`label`               | :value: "//reason/toolchain:bs-platform" |
++----------------------------+-----------------------------+---------------------------------------+
+| The toolchain to use when building this rule.                                                    |
+|                                                                                                  |
+| It should include both `refmt`, `bsc` and a filegroup containing the BuckleScript stdlib.        |
+|                                                                                                  |
++----------------------------+-----------------------------+---------------------------------------+
+
+Example:
+
+```bzl
+# //my_app/BUILD
+load(
+    "@com_github_ostera_rules_reason//reason:def.bzl",
+    "reason_module",
+)
+
+reason_module(
+    name = "my_app",
+    srcs = glob(["*.re", "*.rei"])
+    visibility = ["//my_app:__subpackages__"],
+  )
+```
+
+### `bs_module`
+
+Compile Ocaml code into Javascript.
+
++----------------------------+-----------------------------+---------------------------------------+
+| **Name**                   | **Type**                    | **Default value**                     |
++----------------------------+-----------------------------+---------------------------------------+
+| :param:`name`              | :type:`string`              | |mandatory|                           |
++----------------------------+-----------------------------+---------------------------------------+
+| A unique name for this rule.                                                                     |
+|                                                                                                  |
++----------------------------+-----------------------------+---------------------------------------+
+| :param:`config`            | :type:`label`               | |mandatory|                           |
++----------------------------+-----------------------------+---------------------------------------+
+| The `bsconfig.json` file.                                                                        |
+|                                                                                                  |
+| The file must be located at the root of your WORKSPACE. Currently looking to work around this.   |
+|                                                                                                  |
++----------------------------+-----------------------------+---------------------------------------+
+| :param:`srcs`              | :type:`string_list`         | |mandatory|                           |
++----------------------------+-----------------------------+---------------------------------------+
+| The ML sources of this library.                                                                  |
+|                                                                                                  |
+| The name of the sources will be preserved, and the outputs will replace the `.ml` by their       |
+| compilation counterparts (`.cmi`, `.cmj`, `.cmt`, etc) and the `.js` output.                     |
+|                                                                                                  |
+| Other `bs_module` rules can depend on this library to compile it down to Javascript code.        |
+|                                                                                                  |
++----------------------------+-----------------------------+---------------------------------------+
+| :param:`deps`              | :type:`label_list`          | :value: []                            |
++----------------------------+-----------------------------+---------------------------------------+
+| Dependencies of this library, must include `BsModuleInfo` providers.                             |
+|                                                                                                  |
++----------------------------+-----------------------------+---------------------------------------+
+| :param:`toolchain`         | :type:`label`               | :value: "//reason/toolchain:bs-platform" |
++----------------------------+-----------------------------+---------------------------------------+
+| The toolchain to use when building this rule.                                                    |
+|                                                                                                  |
+| It should include both `refmt`, `bsc` and a filegroup containing the BuckleScript stdlib.        |
+|                                                                                                  |
++----------------------------+-----------------------------+---------------------------------------+
+
+Example:
+
+```bzl
+load(
+    "@com_github_ostera_rules_reason//reason:def.bzl",
+    "reason_module",
+    "bs_module"
+)
+
+reason_module(
+    name = "my_app",
+    srcs = glob(["*.re", "*.rei"]),
+    )
+
+bs_module(
+    visibility = ["//examples/app:__subpackages__"],
+    name = "my_app.js",
+    config = "//:bs_config",
+    srcs = [ ":my_app" ],
+    deps = [ "//examples/some/dependency" ],
+    )
+```
+
+## Toolchain
+
+There is a ToolchainInfo that describes the fields required throughout the build
+rules to successfully compile from ReasonML down to Javascript.
+
+Feel free to register your own toolchain using ``, or use the default toolchain
+that will be managed completely within Bazel.
+
++--------------------------------+--------------------------------------------+
+| **Name**                       | **Type**                                   |
++--------------------------------+--------------------------------------------+
+| :param:`bsc`                   | :type:`File`                               |
++--------------------------------+--------------------------------------------+
+| The BuckleScript compiler file.                                             |
+|                                                                             |
++--------------------------------+--------------------------------------------+
+| :param:`refmt`                 | :type:`File`                               |
++--------------------------------+--------------------------------------------+
+| The ReasonML Formatter file.                                                |
+|                                                                             |
++--------------------------------+--------------------------------------------+
+| :param:`stdlib`                | :type:`Filegroup`                          |
++--------------------------------+--------------------------------------------+
+| A Filegroup with all the source and compiled files for the BuckleScript     |
+| standard library that will be used for compiling Ocaml into Javascript      |
+|                                                                             |
++--------------------------------+--------------------------------------------+
+
+## Providers
+
+There are 2 providers included, that will carry information for the different
+stages of the build process.
+
+### `ReasonModuleInfo`
+
+This provider is the output of the `reason_module` rule, and it represents a 
+compilation unit from ReasonML to Ocaml.
+
++--------------------------------+--------------------------------------------+
+| **Name**                       | **Type**                                   |
++--------------------------------+--------------------------------------------+
+| :param:`name`                  | :type:`string`                             |
++--------------------------------+--------------------------------------------+
+| The name of your the colletion of files                                     |
+|                                                                             |
++--------------------------------+--------------------------------------------+
+| :param:`srcs`                  | :type:`depset(File)`                       |
++--------------------------------+--------------------------------------------+
+| A `depset` of all the ReasonML files that will be compiled to ML            |
+|                                                                             |
++--------------------------------+--------------------------------------------+
+| :param:`outs`                  | :type:`depset(File)`                       |
++--------------------------------+--------------------------------------------+
+| A `depset` of all the target ML files that will be generated                |
+|                                                                             |
++--------------------------------+--------------------------------------------+
+
+### `BsModuleInfo`
+
+This provider is the output of the `bs_module` rule, and it represents a 
+compilation unit from Ocaml to Javascript.
+
++--------------------------------+--------------------------------------------+
+| **Name**                       | **Type**                                   |
++--------------------------------+--------------------------------------------+
+| :param:`name`                  | :type:`string`                             |
++--------------------------------+--------------------------------------------+
+| The name of your the colletion of files                                     |
+|                                                                             |
++--------------------------------+--------------------------------------------+
+| :param:`srcs`                  | :type:`depset(File)`                       |
++--------------------------------+--------------------------------------------+
+| A `depset` of all the Ocaml files that will be compiled to Javascript       |
+|                                                                             |
++--------------------------------+--------------------------------------------+
+| :param:`outs`                  | :type:`depset(File)`                       |
++--------------------------------+--------------------------------------------+
+| A `depset` of all the target ML and Js files that will be generated         |
+|                                                                             |
++--------------------------------+--------------------------------------------+
+| :param:`deps`                  | :type:`depset(File)`                       |
++--------------------------------+--------------------------------------------+
+| A `depset` of all the BuckleScript modules files that the `srcs` depend on  |
+|                                                                             |
++--------------------------------+--------------------------------------------+
