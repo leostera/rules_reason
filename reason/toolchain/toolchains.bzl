@@ -77,6 +77,27 @@ filegroup(
     )
 """
 
+BIN_BUILD_FILE="""
+filegroup(
+    name = "bin",
+    srcs = glob([ "**/bin/*" ]),
+    )
+
+genrule(
+  visibility = ["//visibility:public"],
+  name = "unpack_binaries",
+  cmd = \"\"\"\
+  #!/bin/bash
+
+  # Copy binaries to the output location
+  cp external/{bin_path} $$(dirname $(location :{bin_name}));
+
+  \"\"\",
+  srcs = [ ":bin" ],
+  outs = [ "{bin_name}" ],
+  )
+"""
+
 def _declare_toolchain_repositories(
     nixpkgs_revision,
     bs_version,
@@ -89,6 +110,26 @@ def _declare_toolchain_repositories(
   nixpkgs_git_repository(
       name = "reason-nixpkgs",
       revision = nixpkgs_revision,
+      )
+
+  nixpkgs_package(
+      name = "yarn",
+      attribute_path = "yarn",
+      build_file_content = BIN_BUILD_FILE.format(
+          bin_path = "yarn/bin/yarn",
+          bin_name = "yarn",
+          ),
+      repository = "@reason-nixpkgs",
+      )
+
+  nixpkgs_package(
+      name = "node",
+      attribute_path = "nodejs-slim-9_x",
+      build_file_content = BIN_BUILD_FILE.format(
+          bin_path = "node/bin/node",
+          bin_name = "node",
+          ),
+      repository = "@reason-nixpkgs",
       )
 
   nixpkgs_package(
