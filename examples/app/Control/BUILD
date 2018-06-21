@@ -1,10 +1,4 @@
-package(default_visibility = ["//examples:__subpackages__"])
-
-load(
-    "@com_github_ostera_rules_reason//reason:def.bzl",
-    "reason_module",
-    "bs_module"
-)
+package(default_visibility = ["//app:__subpackages__"])
 
 reason_module(
     name = "srcs",
@@ -12,7 +6,6 @@ reason_module(
     )
 
 bs_module(
-    visibility = ["//examples/app:__subpackages__"],
     name = "Control",
     config = "//:bs_config",
     srcs = [ ":srcs" ],
