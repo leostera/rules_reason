@@ -15,7 +15,7 @@ load(
 
 def _bs_module_impl(ctx):
   bs_platform = ctx.attr.toolchain[platform_common.ToolchainInfo]
-  stdlib = bs_platform.stdlib.files.to_list()
+  stdlib = bs_platform.bs_stdlib.files.to_list()
   stdlib_path = stdlib[0].dirname
 
   runfiles = [ctx.file.config]
