@@ -37,6 +37,7 @@ genrule(
   # Copy binaries to the output location
   cp external/ocaml/bin/ocamlc $$(dirname $(location :ocamlc))/;
   cp external/ocaml/bin/ocamlopt $$(dirname $(location :ocamlopt))/;
+  cp external/ocaml/bin/ocamldep $$(dirname $(location :ocamldep))/;
 
   # Pack library files
   tar --transform "s@external/ocaml/@@g" \
@@ -49,6 +50,7 @@ genrule(
   outs = [
         "ocamlc",
         "ocamlopt",
+        "ocamldep",
         "stdlib.ml.tar",
       ]
   )
@@ -216,6 +218,7 @@ def declare_default_toolchain():
   * `bsc = "//reason/private/bs:bsc.exe"`
   * `ocamlc = "@ocaml//:ocamlc",
   * `ocamlopt = "@ocaml//:ocamlopt",
+  * `ocamldep = "@ocaml//:ocamldep",
   * `ocaml_stdlib = "@ocaml//:stdlib.ml",
   * `refmt = "//reason/private/bs:refmt.exe"`
 
@@ -226,6 +229,7 @@ def declare_default_toolchain():
       bsc = "//reason/private/bs:bsc.exe",
       ocamlc = "@ocaml//:ocamlc",
       ocamlopt = "@ocaml//:ocamlopt",
+      ocamldep = "@ocaml//:ocamldep",
       ocaml_stdlib = "//reason/private/ocaml:stdlib.ml",
       refmt = "//reason/private/bs:refmt.exe",
       )

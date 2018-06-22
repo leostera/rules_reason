@@ -52,6 +52,24 @@ def _ocaml_binary_impl(ctx):
   for i in depset(imports):
     import_paths.extend([ "-I", i ])
 
+  sorted_sources = ctx.actions.declare_file(ctx.attr.name + "_sorted_sources")
+  ctx.actions.run_shell(
+      inputs=sources,
+      tools=[platform.ocamldep],
+      outputs=[sorted_sources],
+      command="""\
+          #!/bin/bash
+
+          {ocamldep} -sort {sources} > {out}
+
+          """.format(
+             ocamldep = platform.ocamldep.path,
+             sources = " ".join([ s.path for s in sources]),
+             out = sorted_sources.path,
+          ),
+  )
+  runfiles.extend([sorted_sources])
+
   arguments = [
       # TODO(@ostera): make this configurable by a provider
       # Better error reporting
@@ -68,24 +86,28 @@ def _ocaml_binary_impl(ctx):
       # Output name
       "-o",
       binfile.path,
+      ]
 
-      # Input flags
-      ] + [ s.path for s in reversed(sources) ]
-
-  ctx.actions.run(
-    arguments = arguments,
-    env = { "HOME": ctx.workspace_name },
-    executable = compiler,
+  ctx.actions.run_shell(
     inputs = runfiles,
     outputs = outputs,
+    tools = [compiler],
+    command = """\
+        #!/bin/bash
+
+        {compiler} {arguments} $(cat {sources})
+
+        """.format(
+          compiler = compiler.path,
+          arguments = " ".join(arguments),
+          sources = sorted_sources.path
+        ),
     mnemonic = "OcamlCompile",
     progress_message = "Compiling ({_in}) to ({out})".format(
       _in=", ".join([ s.basename for s in sources]),
       out=", ".join([ s.basename for s in outputs]),
       ),
     )
-
-  print(outputs)
 
   return [
     DefaultInfo(

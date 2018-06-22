@@ -5,6 +5,7 @@ def _reason_toolchain_impl(ctx):
           bsc = ctx.file.bsc,
           ocamlc = ctx.file.ocamlc,
           ocamlopt = ctx.file.ocamlopt,
+          ocamldep = ctx.file.ocamldep,
           ocaml_stdlib = ctx.attr.ocaml_stdlib,
           refmt = ctx.file.refmt,
           )
@@ -36,6 +37,12 @@ _reason_toolchain = rule(
             executable = True,
             cfg = "target",
             ),
+        "ocamldep": attr.label(
+            mandatory = True,
+            allow_single_file = True,
+            executable = True,
+            cfg = "target",
+            ),
         "ocaml_stdlib": attr.label(
             mandatory = True,
             allow_files = True,
@@ -57,6 +64,7 @@ def reason_toolchain(
     ocaml_stdlib,
     ocamlc,
     ocamlopt,
+    ocamldep,
     refmt,
     **kwargs
     ):
@@ -65,7 +73,9 @@ def reason_toolchain(
   Args:
     bs_stdlib: a filegroup with the standard library compiled for BuckleScript
     bsc: the BuckleScript compiler
-    ocamlc: the Ocaml compiler
+    ocamlc: the Ocaml bytecode compiler
+    ocamlopt: the Ocaml native compiler
+    ocamldep: the Ocaml dependency tool
     ocaml_stdlib: a filegroup with the standard library compiled for Ocaml
     refmt: the standard ReasonML reformatting tool
   """
@@ -79,6 +89,7 @@ def reason_toolchain(
       ocaml_stdlib = ocaml_stdlib,
       ocamlc = ocamlc,
       ocamlopt = ocamlopt,
+      ocamldep = ocamldep,
       refmt = refmt,
   )
 
