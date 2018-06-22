@@ -1,4 +1,4 @@
-package(default_visibility = ["//native_cli:__subpackages__"])
+package(default_visibility = ["//cli:__subpackages__"])
 
 reason_module(
     name = "srcs",
@@ -6,11 +6,11 @@ reason_module(
     )
 
 ocaml_native_binary(
-    name = "native_cli",
+    name = "native",
     srcs = [":srcs"]
     )
 
 ocaml_bytecode_binary(
-    name = "bytecode_cli",
+    name = "bytecode",
     srcs = [":srcs"]
     )
