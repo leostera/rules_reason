@@ -9,3 +9,8 @@ ocaml_native_binary(
     name = "native_cli",
     srcs = [":srcs"]
     )
+
+ocaml_bytecode_binary(
+    name = "bytecode_cli",
+    srcs = [":srcs"]
+    )

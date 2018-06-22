@@ -4,6 +4,7 @@ def _reason_toolchain_impl(ctx):
           bs_stdlib = ctx.attr.bs_stdlib,
           bsc = ctx.file.bsc,
           ocamlc = ctx.file.ocamlc,
+          ocamlopt = ctx.file.ocamlopt,
           ocaml_stdlib = ctx.attr.ocaml_stdlib,
           refmt = ctx.file.refmt,
           )
@@ -29,6 +30,12 @@ _reason_toolchain = rule(
             executable = True,
             cfg = "target",
             ),
+        "ocamlopt": attr.label(
+            mandatory = True,
+            allow_single_file = True,
+            executable = True,
+            cfg = "target",
+            ),
         "ocaml_stdlib": attr.label(
             mandatory = True,
             allow_files = True,
@@ -49,6 +56,7 @@ def reason_toolchain(
     bsc,
     ocaml_stdlib,
     ocamlc,
+    ocamlopt,
     refmt,
     **kwargs
     ):
@@ -70,6 +78,7 @@ def reason_toolchain(
       bsc = bsc,
       ocaml_stdlib = ocaml_stdlib,
       ocamlc = ocamlc,
+      ocamlopt = ocamlopt,
       refmt = refmt,
   )
 

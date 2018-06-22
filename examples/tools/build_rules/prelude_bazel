@@ -3,4 +3,5 @@ load(
     "reason_module",
     "bs_module",
     "ocaml_native_binary",
+    "ocaml_bytecode_binary",
 )

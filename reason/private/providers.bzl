@@ -16,5 +16,5 @@ MlModuleInfo = provider(fields = {
   "deps": "the dependencies of this module",
   "srcs": "the source files for this module",
   "outs": "the compiled files for this module",
-  "type": "whether the outputs are binary or bytecode"
+  "target": "ther compilation target of this module: binary or bytecode"
 })

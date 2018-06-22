@@ -13,8 +13,18 @@ load(
 
 def _ocaml_binary_impl(ctx):
   platform = ctx.attr.toolchain[platform_common.ToolchainInfo]
+
   stdlib = platform.ocaml_stdlib.files.to_list()
   stdlib_path = stdlib[0].dirname
+
+  compiler = None
+  if ctx.attr.target == "native":
+    compiler = platform.ocamlopt
+  if ctx.attr.target == "bytecode":
+    compiler = platform.ocamlc
+
+  if compiler == None:
+    fail("Could not choose a compiler for target "+ctx.attr.target)
 
   binfile = ctx.actions.declare_file(ctx.attr.name)
 
@@ -65,7 +75,7 @@ def _ocaml_binary_impl(ctx):
   ctx.actions.run(
     arguments = arguments,
     env = { "HOME": ctx.workspace_name },
-    executable = platform.ocamlc,
+    executable = compiler,
     inputs = runfiles,
     outputs = outputs,
     mnemonic = "OcamlCompile",
@@ -88,12 +98,16 @@ def _ocaml_binary_impl(ctx):
       deps=ctx.attr.deps,
       srcs=sources,
       outs=outputs,
-      type="binary"
+      target=ctx.attr.target,
       )
   ]
 
 _ocaml_binary = rule(
     attrs = {
+        "target": attr.string(
+           mandatory = True,
+           values = [ "native", "bytecode" ],
+           ),
         "srcs": attr.label_list(
             allow_files = [ML_EXT, MLI_EXT],
             mandatory = True,
@@ -109,4 +123,7 @@ _ocaml_binary = rule(
     )
 
 def ocaml_native_binary(**kwargs):
-  _ocaml_binary(**kwargs)
+  _ocaml_binary(target="native", **kwargs)
+
+def ocaml_bytecode_binary(**kwargs):
+  _ocaml_binary(target="bytecode", **kwargs)

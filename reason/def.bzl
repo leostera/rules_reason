@@ -18,4 +18,5 @@ load(
 load(
     "@com_github_ostera_rules_reason//reason/private:ocaml_binary.bzl",
     "ocaml_native_binary",
+    "ocaml_bytecode_binary",
     )
