@@ -24,8 +24,8 @@ load(
 
 OCAML_BUILD_FILE="""
 filegroup(
-    name = "bin",
-    srcs = glob([ "**/bin/*" ]),
+    name = "srcs",
+    srcs = glob([ "**/*" ]),
     )
 
 genrule(
@@ -35,12 +35,19 @@ genrule(
   #!/bin/bash
 
   # Copy binaries to the output location
-  cp external/ocaml/bin/* $$(dirname $(location :refmt));
+  cp external/ocaml/bin/ocamlc $$(dirname $(location :ocamlc))/;
+
+  # Pack library files
+  tar --transform "s@external/ocaml/@@g" \
+      --create external/ocaml/lib \
+      --dereference \
+      > $(location :stdlib.ml.tar);
 
   \"\"\",
-  srcs = [ ":bin" ],
+  srcs = [ ":srcs" ],
   outs = [
         "ocamlc",
+        "stdlib.ml.tar",
       ]
   )
 """
@@ -147,6 +154,7 @@ def _declare_toolchain_repositories(
 
   nixpkgs_package(
       name = "node",
+      # TODO(@ostera): let me change the node version
       attribute_path = "nodejs-slim-9_x",
       build_file_content = SINGLE_BIN_BUILD_FILE.format(
           bin_path = "node/bin/node",
@@ -164,11 +172,9 @@ def _declare_toolchain_repositories(
 
   nixpkgs_package(
       name = "ocaml",
+      # TODO(@ostera): let me change the ocaml version
       attribute_path = "ocaml_4_03",
-      build_file_content = SINGLE_BIN_BUILD_FILE.format(
-          bin_path = "ocaml/bin/ocamlc",
-          bin_name = "ocamlc",
-          ),
+      build_file_content = OCAML_BUILD_FILE,
       repository = "@reason-nixpkgs",
       )
 
@@ -204,16 +210,18 @@ def declare_default_toolchain():
 
   It defaults to:
 
-  * `stdlib = "//reason/private/bs:stdlib.ml"`
+  * `bs_stdlib = "//reason/private/bs:stdlib.ml"`
   * `bsc = "//reason/private/bs:bsc.exe"`
-  * `ocamlc = "//reason/private/bs:ocamlc"`
+  * `ocamlc = "@ocaml//:ocamlc",
+  * `ocaml_stdlib = "@ocaml//:stdlib.ml",
   * `refmt = "//reason/private/bs:refmt.exe"`
 
   """
   _reason_toolchain(
       name = "bs",
-      stdlib = "//reason/private/bs:stdlib.ml",
+      bs_stdlib = "//reason/private/bs:stdlib.ml",
       bsc = "//reason/private/bs:bsc.exe",
       ocamlc = "@ocaml//:ocamlc",
+      ocaml_stdlib = "//reason/private/ocaml:stdlib.ml",
       refmt = "//reason/private/bs:refmt.exe",
       )
