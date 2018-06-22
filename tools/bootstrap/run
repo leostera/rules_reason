@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# TODO(@ostera): Rewrite this in Reason :) 
+
+echo "Hello there ${USER}, I'll begin by installing nix and bazel. Hang tight!"
+
+echo
+
+echo
+
+curl https://nixos.org/nix/install | sh
+
+if [[ `uname` == "Darwin" ]];
+then
+  echo "You're on macOS! Let's make sure brew is installed :) ..."
+  ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+  brew update
+
+  echo "Brilliant! Let's install bazel now..."
+
+  brew install bazel
+
+  echo "Let me setup the rest of the repo now..."
+
+  `bazel build //...`
+
+  echo "We're good! Happy hacking."
+
+  exit 0
+fi;
+
+echo "Sorry! I don't know how to get bazel installed in your OS :("
+exit 1
