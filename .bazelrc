@@ -1,6 +1,6 @@
 startup --host_jvm_args=-XX:-UseParallelGC
 build --show_timestamps --verbose_failures --sandbox_debug
-build --color=yes
+build --color=yes --disk_cache=~/.cache/bazel
 query --keep_going
 
 build:memcheck --strip=never --test_timeout=3600

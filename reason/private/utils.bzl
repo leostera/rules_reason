@@ -38,9 +38,11 @@ def unpack_filegroup(name, tar, files, **kwargs):
       cmd = """\
           #!/bin/bash
 
-          tar xf $$(pwd)/$(location {tar});
+          tar --extract \
+              --file $$(pwd)/$(location {tar}) \
+              --directory $(@D);
 
-          """.format(tar=tar, first_file=files[0]),
+          """.format(tar=tar),
       srcs = [ tar ],
       outs = files,
       **kwargs

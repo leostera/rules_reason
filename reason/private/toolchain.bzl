@@ -1,8 +1,12 @@
 def _reason_toolchain_impl(ctx):
   return [
       platform_common.ToolchainInfo(
-          stdlib = ctx.attr.stdlib,
+          bs_stdlib = ctx.attr.bs_stdlib,
           bsc = ctx.file.bsc,
+          ocamlc = ctx.file.ocamlc,
+          ocamlopt = ctx.file.ocamlopt,
+          ocamldep = ctx.file.ocamldep,
+          ocaml_stdlib = ctx.attr.ocaml_stdlib,
           refmt = ctx.file.refmt,
           )
       ]
@@ -10,7 +14,7 @@ def _reason_toolchain_impl(ctx):
 _reason_toolchain = rule(
     implementation = _reason_toolchain_impl,
     attrs = {
-        "stdlib": attr.label(
+        "bs_stdlib": attr.label(
             mandatory = True,
             allow_files = True,
             executable = False,
@@ -21,6 +25,29 @@ _reason_toolchain = rule(
             executable = True,
             cfg = "target",
             ),
+        "ocamlc": attr.label(
+            mandatory = True,
+            allow_single_file = True,
+            executable = True,
+            cfg = "target",
+            ),
+        "ocamlopt": attr.label(
+            mandatory = True,
+            allow_single_file = True,
+            executable = True,
+            cfg = "target",
+            ),
+        "ocamldep": attr.label(
+            mandatory = True,
+            allow_single_file = True,
+            executable = True,
+            cfg = "target",
+            ),
+        "ocaml_stdlib": attr.label(
+            mandatory = True,
+            allow_files = True,
+            executable = False,
+            ),
         "refmt": attr.label(
             mandatory = True,
             allow_single_file = True,
@@ -30,21 +57,39 @@ _reason_toolchain = rule(
         },
     )
 
-def reason_toolchain(name, stdlib, bsc, refmt, **kwargs):
+def reason_toolchain(
+    name,
+    bs_stdlib,
+    bsc,
+    ocaml_stdlib,
+    ocamlc,
+    ocamlopt,
+    ocamldep,
+    refmt,
+    **kwargs
+    ):
   """The minimum ReasonML toolchain.
 
   Args:
-    refmt: the standard ReasonML reformatting tool
+    bs_stdlib: a filegroup with the standard library compiled for BuckleScript
     bsc: the BuckleScript compiler
-    stdlib: a filegroup with the standard library the compiler is using
+    ocamlc: the Ocaml bytecode compiler
+    ocamlopt: the Ocaml native compiler
+    ocamldep: the Ocaml dependency tool
+    ocaml_stdlib: a filegroup with the standard library compiled for Ocaml
+    refmt: the standard ReasonML reformatting tool
   """
 
   impl_name = name + "-platform"
 
   _reason_toolchain(
       name = impl_name,
-      stdlib = stdlib,
+      bs_stdlib = bs_stdlib,
       bsc = bsc,
+      ocaml_stdlib = ocaml_stdlib,
+      ocamlc = ocamlc,
+      ocamlopt = ocamlopt,
+      ocamldep = ocamldep,
       refmt = refmt,
   )
 

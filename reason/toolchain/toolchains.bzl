@@ -22,6 +22,40 @@ load(
     "nixpkgs_package",
     )
 
+OCAML_BUILD_FILE="""
+filegroup(
+    name = "srcs",
+    srcs = glob([ "**/*" ]),
+    )
+
+genrule(
+  visibility = ["//visibility:public"],
+  name = "unpack_binaries",
+  cmd = \"\"\"\
+  #!/bin/bash
+
+  # Copy binaries to the output location
+  cp external/ocaml/bin/ocamlc $$(dirname $(location :ocamlc))/;
+  cp external/ocaml/bin/ocamlopt $$(dirname $(location :ocamlopt))/;
+  cp external/ocaml/bin/ocamldep $$(dirname $(location :ocamldep))/;
+
+  # Pack library files
+  tar --transform "s@external/ocaml/@@g" \
+      --create external/ocaml/lib \
+      --dereference \
+      > $(location :stdlib.ml.tar);
+
+  \"\"\",
+  srcs = [ ":srcs" ],
+  outs = [
+        "ocamlc",
+        "ocamlopt",
+        "ocamldep",
+        "stdlib.ml.tar",
+      ]
+  )
+"""
+
 REASON_BUILD_FILE="""
 filegroup(
     name = "bin",
@@ -77,7 +111,7 @@ filegroup(
     )
 """
 
-BIN_BUILD_FILE="""
+SINGLE_BIN_BUILD_FILE="""
 filegroup(
     name = "bin",
     srcs = glob([ "**/bin/*" ]),
@@ -90,7 +124,7 @@ genrule(
   #!/bin/bash
 
   # Copy binaries to the output location
-  cp external/{bin_path} $$(dirname $(location :{bin_name}));
+  cp external/{bin_path} $(location :{bin_name});
 
   \"\"\",
   srcs = [ ":bin" ],
@@ -115,7 +149,7 @@ def _declare_toolchain_repositories(
   nixpkgs_package(
       name = "yarn",
       attribute_path = "yarn",
-      build_file_content = BIN_BUILD_FILE.format(
+      build_file_content = SINGLE_BIN_BUILD_FILE.format(
           bin_path = "yarn/bin/yarn",
           bin_name = "yarn",
           ),
@@ -124,8 +158,9 @@ def _declare_toolchain_repositories(
 
   nixpkgs_package(
       name = "node",
+      # TODO(@ostera): let me change the node version
       attribute_path = "nodejs-slim-9_x",
-      build_file_content = BIN_BUILD_FILE.format(
+      build_file_content = SINGLE_BIN_BUILD_FILE.format(
           bin_path = "node/bin/node",
           bin_name = "node",
           ),
@@ -136,6 +171,14 @@ def _declare_toolchain_repositories(
       name = "reason-cli",
       attribute_path = "ocamlPackages.reason",
       build_file_content = REASON_BUILD_FILE,
+      repository = "@reason-nixpkgs",
+      )
+
+  nixpkgs_package(
+      name = "ocaml",
+      # TODO(@ostera): let me change the ocaml version
+      attribute_path = "ocaml_4_03",
+      build_file_content = OCAML_BUILD_FILE,
       repository = "@reason-nixpkgs",
       )
 
@@ -171,14 +214,22 @@ def declare_default_toolchain():
 
   It defaults to:
 
-  * `stdlib = "//reason/private/bs:stdlib.ml"`
+  * `bs_stdlib = "//reason/private/bs:stdlib.ml"`
   * `bsc = "//reason/private/bs:bsc.exe"`
+  * `ocamlc = "@ocaml//:ocamlc",
+  * `ocamlopt = "@ocaml//:ocamlopt",
+  * `ocamldep = "@ocaml//:ocamldep",
+  * `ocaml_stdlib = "@ocaml//:stdlib.ml",
   * `refmt = "//reason/private/bs:refmt.exe"`
 
   """
   _reason_toolchain(
       name = "bs",
-      stdlib = "//reason/private/bs:stdlib.ml",
+      bs_stdlib = "//reason/private/bs:stdlib.ml",
       bsc = "//reason/private/bs:bsc.exe",
+      ocamlc = "@ocaml//:ocamlc",
+      ocamlopt = "@ocaml//:ocamlopt",
+      ocamldep = "@ocaml//:ocamldep",
+      ocaml_stdlib = "//reason/private/ocaml:stdlib.ml",
       refmt = "//reason/private/bs:refmt.exe",
       )
