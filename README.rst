@@ -313,7 +313,7 @@ Compile ML code into bytecode or native binaries.
 +----------------------------+-----------------------------+-------------------------------------------+
 | :param:`name`              | :type:`string`              | |mandatory|                               |
 +----------------------------+-----------------------------+-------------------------------------------+
-| A unique name for this rule, used as the name of the output binary                                                                         |
+| A unique name for this rule, used as the name of the output binary                                   |
 |                                                                                                      |
 +----------------------------+-----------------------------+-------------------------------------------+
 | :param:`srcs`              | :type:`string_list`         | |mandatory|                               |
@@ -324,14 +324,15 @@ Compile ML code into bytecode or native binaries.
 +----------------------------+-----------------------------+-------------------------------------------+
 | :param:`deps`              | :type:`label_list`          | :value: []                                |
 +----------------------------+-----------------------------+-------------------------------------------+
-| Dependencies of this library, must include ``ReasonModuleInfo`` providers.                               |
+| Dependencies of this library, must include ``ReasonModuleInfo`` providers.                           |
 |                                                                                                      |
 +----------------------------+-----------------------------+-------------------------------------------+
 | :param:`toolchain`         | :type:`label`               | :value: "//reason/toolchain:bs-platform"  |
 +----------------------------+-----------------------------+-------------------------------------------+
 | The toolchain to use when building this rule.                                                        |
 |                                                                                                      |
-| It should include both ``ocalmc``, ``ocamlopt``, and a filegroup containing the Ocaml stdlib.        |
+| It should include both ``ocamlc``, ``ocamlopt``, ``ocamldep`` and a filegroup                        |
+| containing the Ocaml stdlib.                                                                         |
 |                                                                                                      |
 +----------------------------+-----------------------------+-------------------------------------------+
 
@@ -394,6 +395,11 @@ that will be managed completely within Bazel.
 | :param:`ocamlopt`              | :type:`File`                               |
 +--------------------------------+--------------------------------------------+
 | The Ocaml native compiler.                                                  |
+|                                                                             |
++--------------------------------+--------------------------------------------+
+| :param:`ocamldep`              | :type:`File`                               |
++--------------------------------+--------------------------------------------+
+| The Ocaml dependency tool.                                                  |
 |                                                                             |
 +--------------------------------+--------------------------------------------+
 | :param:`ocaml_stdlib`          | :type:`Filegroup`                          |
