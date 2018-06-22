@@ -1,1 +1,1 @@
-print_string("Running from cli");
+Lib.work();
