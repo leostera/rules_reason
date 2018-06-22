@@ -22,6 +22,29 @@ load(
     "nixpkgs_package",
     )
 
+OCAML_BUILD_FILE="""
+filegroup(
+    name = "bin",
+    srcs = glob([ "**/bin/*" ]),
+    )
+
+genrule(
+  visibility = ["//visibility:public"],
+  name = "unpack_binaries",
+  cmd = \"\"\"\
+  #!/bin/bash
+
+  # Copy binaries to the output location
+  cp external/ocaml/bin/* $$(dirname $(location :refmt));
+
+  \"\"\",
+  srcs = [ ":bin" ],
+  outs = [
+        "ocamlc",
+      ]
+  )
+"""
+
 REASON_BUILD_FILE="""
 filegroup(
     name = "bin",
@@ -77,7 +100,7 @@ filegroup(
     )
 """
 
-BIN_BUILD_FILE="""
+SINGLE_BIN_BUILD_FILE="""
 filegroup(
     name = "bin",
     srcs = glob([ "**/bin/*" ]),
@@ -90,7 +113,7 @@ genrule(
   #!/bin/bash
 
   # Copy binaries to the output location
-  cp external/{bin_path} $$(dirname $(location :{bin_name}));
+  cp external/{bin_path} $(location :{bin_name});
 
   \"\"\",
   srcs = [ ":bin" ],
@@ -115,7 +138,7 @@ def _declare_toolchain_repositories(
   nixpkgs_package(
       name = "yarn",
       attribute_path = "yarn",
-      build_file_content = BIN_BUILD_FILE.format(
+      build_file_content = SINGLE_BIN_BUILD_FILE.format(
           bin_path = "yarn/bin/yarn",
           bin_name = "yarn",
           ),
@@ -125,7 +148,7 @@ def _declare_toolchain_repositories(
   nixpkgs_package(
       name = "node",
       attribute_path = "nodejs-slim-9_x",
-      build_file_content = BIN_BUILD_FILE.format(
+      build_file_content = SINGLE_BIN_BUILD_FILE.format(
           bin_path = "node/bin/node",
           bin_name = "node",
           ),
@@ -136,6 +159,16 @@ def _declare_toolchain_repositories(
       name = "reason-cli",
       attribute_path = "ocamlPackages.reason",
       build_file_content = REASON_BUILD_FILE,
+      repository = "@reason-nixpkgs",
+      )
+
+  nixpkgs_package(
+      name = "ocaml",
+      attribute_path = "ocaml_4_03",
+      build_file_content = SINGLE_BIN_BUILD_FILE.format(
+          bin_path = "ocaml/bin/ocamlc",
+          bin_name = "ocamlc",
+          ),
       repository = "@reason-nixpkgs",
       )
 
@@ -173,6 +206,7 @@ def declare_default_toolchain():
 
   * `stdlib = "//reason/private/bs:stdlib.ml"`
   * `bsc = "//reason/private/bs:bsc.exe"`
+  * `ocamlc = "//reason/private/bs:ocamlc"`
   * `refmt = "//reason/private/bs:refmt.exe"`
 
   """
@@ -180,5 +214,6 @@ def declare_default_toolchain():
       name = "bs",
       stdlib = "//reason/private/bs:stdlib.ml",
       bsc = "//reason/private/bs:bsc.exe",
+      ocamlc = "@ocaml//:ocamlc",
       refmt = "//reason/private/bs:refmt.exe",
       )

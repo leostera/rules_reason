@@ -3,11 +3,6 @@
 #
 
 alias(
-  name = "retool",
-  actual = "//retool:bin",
-)
-
-alias(
   name = "yarn",
   actual = "@yarn//:yarn",
 )
@@ -15,6 +10,11 @@ alias(
 alias(
   name = "bsb",
   actual = "//reason/private/bs:bsb.exe"
+)
+
+alias(
+  name = "ocamlc",
+  actual = "//reason/private/bs:ocamlc"
 )
 
 alias(

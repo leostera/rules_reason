@@ -3,6 +3,7 @@ def _reason_toolchain_impl(ctx):
       platform_common.ToolchainInfo(
           stdlib = ctx.attr.stdlib,
           bsc = ctx.file.bsc,
+          ocamlc = ctx.file.ocamlc,
           refmt = ctx.file.refmt,
           )
       ]
@@ -21,6 +22,12 @@ _reason_toolchain = rule(
             executable = True,
             cfg = "target",
             ),
+        "ocamlc": attr.label(
+            mandatory = True,
+            allow_single_file = True,
+            executable = True,
+            cfg = "target",
+            ),
         "refmt": attr.label(
             mandatory = True,
             allow_single_file = True,
@@ -30,12 +37,13 @@ _reason_toolchain = rule(
         },
     )
 
-def reason_toolchain(name, stdlib, bsc, refmt, **kwargs):
+def reason_toolchain(name, stdlib, bsc, ocamlc, refmt, **kwargs):
   """The minimum ReasonML toolchain.
 
   Args:
     refmt: the standard ReasonML reformatting tool
     bsc: the BuckleScript compiler
+    ocamlc: the Ocaml compiler
     stdlib: a filegroup with the standard library the compiler is using
   """
 
@@ -45,6 +53,7 @@ def reason_toolchain(name, stdlib, bsc, refmt, **kwargs):
       name = impl_name,
       stdlib = stdlib,
       bsc = bsc,
+      ocamlc = ocamlc,
       refmt = refmt,
   )
 

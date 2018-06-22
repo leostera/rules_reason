@@ -40,7 +40,11 @@ def unpack_filegroup(name, tar, files, **kwargs):
 
           tar xf $$(pwd)/$(location {tar});
 
-          """.format(tar=tar, first_file=files[0]),
+          ls -la;
+
+          exit 1;
+
+          """.format(tar=tar),
       srcs = [ tar ],
       outs = files,
       **kwargs
