@@ -80,7 +80,11 @@ Begin by adding the following to your ``WORKSPACE``:
 Use ``reason_module`` to compile a group of ``.re`` and ``.rei`` files into their
 corresponding ``.ml`` and ``.mli`` counterparts.
 
-Then you can use ``bs_module`` to turn that target into Javascript!
+Compiling to Javascript
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can use ``bs_module`` to turn any ML source target into Javascript, this
+includes the outputs from a ``reason_module`` rule too.
 
 Unfortunately ``bsc`` requires a ``bsconfig.json`` file at the place where you call
 it. This means that you need to have that file at the root of your project.
@@ -105,6 +109,35 @@ it. This means that you need to have that file at the root of your project.
     srcs = [":srcs.re"],
     deps = [":deps"],
   )
+
+Compiling to Native and Bytecode
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can use ``ocaml_native_binary`` and ``ocaml_bytecode_binary`` to compile your
+ML sources into native or bytecode binaries, and yes you can use your
+``reason_module`` targets as sources!
+
+.. code:: bzl
+
+  # BUILD file somewhere in your sources!
+  reason_module(
+      name = "srcs",
+      srcs = glob(["*.re"]),
+      )
+
+  ocaml_native_binary(
+      name = "native",
+      srcs = [":srcs"],
+    )
+
+  ocaml_bytecode_binary(
+      name = "bytecode",
+      srcs = [":srcs"],
+    )
+
+
+Top-level
+~~~~~~~~~~~~
 
 You can access the ``rtop`` by running:
 
