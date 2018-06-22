@@ -14,7 +14,12 @@ alias(
 
 alias(
   name = "ocamlc",
-  actual = "//reason/private/bs:ocamlc"
+  actual = "@ocaml//:ocamlc",
+)
+
+alias(
+  name = "ocamlopt",
+  actual = "@ocaml//:ocamlopt",
 )
 
 alias(
