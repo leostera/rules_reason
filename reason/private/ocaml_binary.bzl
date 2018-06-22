@@ -13,7 +13,7 @@ load(
 
 def _ocaml_binary_impl(ctx):
   platform = ctx.attr.toolchain[platform_common.ToolchainInfo]
-  stdlib = platform.stdlib.files.to_list()
+  stdlib = platform.ocaml_stdlib.files.to_list()
   stdlib_path = stdlib[0].dirname
 
   binfile = ctx.actions.declare_file(ctx.attr.name)
@@ -57,10 +57,10 @@ def _ocaml_binary_impl(ctx):
 
       # Output name
       "-o",
-      ctx.attr.name,
+      binfile.path,
 
       # Input flags
-      ] + [ s.path for s in sources ]
+      ] + [ s.path for s in reversed(sources) ]
 
   ctx.actions.run(
     arguments = arguments,
@@ -75,10 +75,13 @@ def _ocaml_binary_impl(ctx):
       ),
     )
 
+  print(outputs)
+
   return [
     DefaultInfo(
       files=depset(outputs),
       runfiles=ctx.runfiles(files=runfiles),
+      executable=binfile,
     ),
     MlModuleInfo(
       name=ctx.label.name,
@@ -101,7 +104,8 @@ _ocaml_binary = rule(
             providers = [platform_common.ToolchainInfo],
             ),
         },
-    implementation = _ocaml_binary_impl
+    executable=True,
+    implementation = _ocaml_binary_impl,
     )
 
 def ocaml_native_binary(**kwargs):

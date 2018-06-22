@@ -21,13 +21,15 @@ genrule(
       pushd $$pkg_root/vendor/ocaml;
 
         ./configure --prefix $$(pwd);
-        make world.opt;
+        make world.opt -j4;
         make install;
 
       popd;
 
       # output the compiled workspace
-      tar c $$pkg_root > $(location :ocaml_platform.tar);
+      tar --create $$pkg_root \
+          --dereference \
+          > $(location :ocaml_platform.tar);
 
       """,
   srcs = [ "@bs//:ocaml_srcs" ],
@@ -65,7 +67,10 @@ genrule(
       popd;
 
       # output the compiled workspace
-      tar c $$pkg_root > $(location :bs_platform.tar);
+      tar --create $$pkg_root \
+          --dereference \
+          > $(location :bs_platform.tar);
+
   """,
   srcs = ["@bs//:bs_srcs", ":ocaml_platform.tar"],
   outs = ["bs_platform.tar"],
@@ -82,16 +87,20 @@ genrule(
       tar xf $$(pwd)/$(location :bs_platform.tar);
 
       # pack bucklescript binaries
-      tar --transform "s@lib/@@g" \
+      tar --transform "s=$$pkg_root/lib/==g" \
           --create $$pkg_root/lib/*.exe \
           > $(location :bucklescript.bins.tar);
 
       # pack ml stdlib preserving paths
-      tar --create $$pkg_root/lib/ocaml/* \
+      tar --transform "s=$$pkg_root/==g" \
+          --create $$pkg_root/lib/ocaml/* \
+          --dereference \
           > $(location stdlib.ml.tar);
 
       # pack js stdlib preserving paths
-      tar --create $$pkg_root/lib/js/* \
+      tar --transform "s=$$pkg_root/==g" \
+          --create $$pkg_root/lib/js/* \
+          --dereference \
           > $(location stdlib.js.tar);
 
     """,
@@ -104,28 +113,13 @@ genrule(
   )
 
 genrule(
-	name = "unpack_ocaml_binaries",
-	cmd = """\
-      #!/bin/bash
-
-      # compute this package's root directory
-      pkg_root=$$(dirname $(location :bs_platform.tar))
-
-      tar xf $(location :bs_platform.tar);
-
-      cp $$pkg_root/vendor/ocaml/bin/ocamlc $$(dirname $(location :ocamlc));
-
-      """,
-  srcs = [ ":bs_platform.tar" ],
-  outs = [ "ocamlc" ]
-	)
-
-genrule(
 	name = "unpack_bsb_binaries",
 	cmd = """\
       #!/bin/bash
 
-      tar xvf $(location :bucklescript.bins.tar);
+      tar --extract \
+          --file $(location :bucklescript.bins.tar) \
+          --directory $(@D);
 
       """,
   srcs = [ ":bucklescript.bins.tar" ],
@@ -982,6 +976,6 @@ ml_files = [
 
 unpack_filegroup(
   name = "stdlib.ml",
-  tar = ":bs_platform.tar",
+  tar = ":stdlib.ml.tar",
   files = ml_files
 )
