@@ -30,7 +30,8 @@ genrule(
       popd;
 
       # output the compiled workspace
-      tar --create $$pkg_root \
+      tar --transform "s=$$pkg_root/==g" \
+          --create $$pkg_root \
           --dereference \
           > $(location :ocaml_platform.tar);
 
@@ -61,7 +62,9 @@ genrule(
       cp -fR external/bs/* $$pkg_root;
 
       # unpack patched ocaml on top
-      tar xf $$(pwd)/$(location :ocaml_platform.tar);
+      tar --extract \
+          --file $$(pwd)/$(location :ocaml_platform.tar) \
+          --directory $(@D);
 
       pushd $$pkg_root;
 
@@ -74,7 +77,8 @@ genrule(
       popd;
 
       # output the compiled workspace
-      tar --create $$pkg_root \
+      tar --transform "s=$$pkg_root/==g" \
+          --create $$pkg_root \
           --dereference \
           > $(location :bs_platform.tar);
 
@@ -95,7 +99,9 @@ genrule(
       pkg_root=$$(dirname $(location :bs_platform.tar))
 
       # unpack bs-platform
-      tar xf $$(pwd)/$(location :bs_platform.tar);
+      tar --extract \
+          --file $$(pwd)/$(location :bs_platform.tar) \
+          --directory $(@D);
 
       # pack bucklescript binaries
       tar --transform "s=$$pkg_root/lib/==g" \
