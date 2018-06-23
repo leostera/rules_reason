@@ -15,9 +15,22 @@ A collection of ReasonML and BuckleScript rules and tools for Bazel.
   Note: this is alpha software! I'm building it to properly integrate a ReasonML
   application into a bigger project that builds with Bazel.
 
-This projet relies on ``nix`` being installed in your system to pull in the
-ReasonML tooling. BuckleScript will be compiled from scratch so expect about
-~5 minutes for your first ``bazel build //...`` to complete.
+This projet relies two prerequisites:
+
+1. ``nix``, the purely functional package manager, which is used for installing
+  the ReasonML tooling (``refmt`` specifically), ``opam``, ``yarn`` and ``node``
+  in an hermetic-ish fashion. At least you don't need to handle those yourself :)
+#. ``bazel``, naturally.
+
+
+If you just cloned this repo and you have both those tools installed, feel free
+to start with a ``bazel build //...`` to get everything warmed up.
+
+The examples works a separate workspace so you will need to run ``bazel build //...``
+there as well if you wish to play around with them.
+
+  WARNING: because this rules handle all of their dependencies hermetically, a
+  clean install takes a good ~10 minutes on an early 2015 Macbook Pro.
 
 .. contents:: :depth: 2
 
@@ -306,7 +319,9 @@ Example:
 ``ocaml_native_binary`` and ``ocaml_bytecode_binary``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Compile ML code into bytecode or native binaries.
+Compile ML code into bytecode or native binaries. For bytecode binaries it will
+copmile them including the runtime, rather than separately. This is something
+that I'd like to change in the future.
 
 +----------------------------+-----------------------------+-------------------------------------------+
 | **Name**                   | **Type**                    | **Default value**                         |
@@ -331,7 +346,7 @@ Compile ML code into bytecode or native binaries.
 +----------------------------+-----------------------------+-------------------------------------------+
 | The toolchain to use when building this rule.                                                        |
 |                                                                                                      |
-| It should include both ``ocamlc``, ``ocamlopt``, ``ocamldep`` and a filegroup                        |
+| It should include both ``ocamlc``, ``ocamlopt``, ``ocamldep``, ``ocamlrun``,  and a filegroup        |
 | containing the Ocaml stdlib.                                                                         |
 |                                                                                                      |
 +----------------------------+-----------------------------+-------------------------------------------+
@@ -401,6 +416,12 @@ that will be managed completely within Bazel.
 +--------------------------------+--------------------------------------------+
 | The Ocaml dependency tool.                                                  |
 |                                                                             |
++--------------------------------+--------------------------------------------+
+| :param:`ocamlrun`              | :type:`File`                               |
++--------------------------------+--------------------------------------------+
+| The Ocaml bytecode interpreter.                                             |
+|                                                                             |
++--------------------------------+--------------------------------------------+
 +--------------------------------+--------------------------------------------+
 | :param:`ocaml_stdlib`          | :type:`Filegroup`                          |
 +--------------------------------+--------------------------------------------+
