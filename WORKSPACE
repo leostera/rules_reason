@@ -1,7 +1,7 @@
 workspace(name = "com_github_ostera_rules_reason")
 
 ###
-### Nix Repositories
+### Bazel Tools!
 ###
 
 load(
