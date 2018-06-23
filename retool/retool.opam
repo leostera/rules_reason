@@ -1,0 +1,6 @@
+opam-version: "1.2"
+name: "retool"
+version: "HEAD"
+depends: [
+  "cmdliner" {= "1.0.2"}
+]

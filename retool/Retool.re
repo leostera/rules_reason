@@ -1,1 +1,1 @@
-Cli.work();
+Cli.run();
