@@ -22,7 +22,7 @@ load(
     "nixpkgs_package",
     )
 
-OCAML_BUILD_FILE="""
+OPAM_BUILD_FILE="""
 filegroup(
     name = "srcs",
     srcs = glob([ "**/*" ]),
@@ -35,23 +35,12 @@ genrule(
   #!/bin/bash
 
   # Copy binaries to the output location
-  cp external/ocaml/bin/ocamlc $$(dirname $(location :ocamlc))/;
-  cp external/ocaml/bin/ocamlopt $$(dirname $(location :ocamlopt))/;
-  cp external/ocaml/bin/ocamldep $$(dirname $(location :ocamldep))/;
-
-  # Pack library files
-  tar --transform "s@external/ocaml/@@g" \
-      --create external/ocaml/lib \
-      --dereference \
-      > $(location :stdlib.ml.tar);
+  cp external/opam/bin/opam $$(dirname $(location :opam))/;
 
   \"\"\",
   srcs = [ ":srcs" ],
   outs = [
-        "ocamlc",
-        "ocamlopt",
-        "ocamldep",
-        "stdlib.ml.tar",
+        "opam",
       ]
   )
 """
@@ -175,10 +164,9 @@ def _declare_toolchain_repositories(
       )
 
   nixpkgs_package(
-      name = "ocaml",
-      # TODO(@ostera): let me change the ocaml version
-      attribute_path = "ocaml_4_03",
-      build_file_content = OCAML_BUILD_FILE,
+      name = "opam",
+      attribute_path = "opam",
+      build_file_content = OPAM_BUILD_FILE,
       repository = "@reason-nixpkgs",
       )
 
@@ -216,10 +204,11 @@ def declare_default_toolchain():
 
   * `bs_stdlib = "//reason/private/bs:stdlib.ml"`
   * `bsc = "//reason/private/bs:bsc.exe"`
-  * `ocamlc = "@ocaml//:ocamlc",
-  * `ocamlopt = "@ocaml//:ocamlopt",
-  * `ocamldep = "@ocaml//:ocamldep",
-  * `ocaml_stdlib = "@ocaml//:stdlib.ml",
+  * `ocamlc = "//reason/private/opam:ocamlc"`
+  * `ocamlopt = "//reason/private/opam:ocamlopt"`
+  * `ocamldep = "//reason/private/opam:ocamldep"`
+  * `ocamlrun = "//reason/private/opam:ocamlrun"`
+  * `ocaml_stdlib = "//reason/private/ocaml:stdlib.ml"`
   * `refmt = "//reason/private/bs:refmt.exe"`
 
   """
@@ -227,9 +216,10 @@ def declare_default_toolchain():
       name = "bs",
       bs_stdlib = "//reason/private/bs:stdlib.ml",
       bsc = "//reason/private/bs:bsc.exe",
-      ocamlc = "@ocaml//:ocamlc",
-      ocamlopt = "@ocaml//:ocamlopt",
-      ocamldep = "@ocaml//:ocamldep",
+      ocamlc = "//reason/private/opam:ocamlc.byte",
+      ocamlopt = "//reason/private/opam:ocamlopt.byte",
+      ocamldep = "//reason/private/opam:ocamldep.byte",
+      ocamlrun = "//reason/private/opam:ocamlrun",
       ocaml_stdlib = "//reason/private/ocaml:stdlib.ml",
       refmt = "//reason/private/bs:refmt.exe",
       )

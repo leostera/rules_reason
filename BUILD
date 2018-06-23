@@ -14,12 +14,17 @@ alias(
 
 alias(
     name = "ocamlc",
-    actual = "@ocaml//:ocamlc",
+    actual = "//reason/private/opam:ocamlc",
 )
 
 alias(
     name = "ocamlopt",
-    actual = "@ocaml//:ocamlopt",
+    actual = "//reason/private/opam:ocamlopt",
+)
+
+alias(
+    name = "ocamldep",
+    actual = "//reason/private/opam:ocamldep",
 )
 
 alias(

@@ -17,6 +17,8 @@ def _ocaml_binary_impl(ctx):
   stdlib = platform.ocaml_stdlib.files.to_list()
   stdlib_path = stdlib[0].dirname
 
+  interpreter = platform.ocamlrun
+
   compiler = None
   if ctx.attr.target == "native":
     compiler = platform.ocamlopt
@@ -55,20 +57,25 @@ def _ocaml_binary_impl(ctx):
   sorted_sources = ctx.actions.declare_file(ctx.attr.name + "_sorted_sources")
   ctx.actions.run_shell(
       inputs=sources,
-      tools=[platform.ocamldep],
+      tools=[platform.ocamldep, interpreter],
       outputs=[sorted_sources],
       command="""\
           #!/bin/bash
 
-          {ocamldep} -sort {sources} > {out}
+          {interpreter} {ocamldep} -sort {sources} > {out}
 
           """.format(
-             ocamldep = platform.ocamldep.path,
-             sources = " ".join([ s.path for s in sources]),
-             out = sorted_sources.path,
-          ),
+              interpreter = interpreter.path,
+              ocamldep = platform.ocamldep.path,
+              sources = " ".join([ s.path for s in sources]),
+              out = sorted_sources.path,
+              ),
   )
   runfiles.extend([sorted_sources])
+
+  special_flags = []
+  if ctx.attr.target == "bytecode":
+    special_flags.extend(["-custom"])
 
   arguments = [
       # TODO(@ostera): make this configurable by a provider
@@ -78,6 +85,7 @@ def _ocaml_binary_impl(ctx):
 
       # TODO(@ostera): declare annotations as files as well
       "-bin-annot",
+      ] + special_flags + [
 
       # Imports, includes current module and pervasives
       "-I", stdlib_path,
@@ -91,17 +99,18 @@ def _ocaml_binary_impl(ctx):
   ctx.actions.run_shell(
     inputs = runfiles,
     outputs = outputs,
-    tools = [compiler],
+    tools = [compiler, interpreter],
     command = """\
         #!/bin/bash
 
-        {compiler} {arguments} $(cat {sources})
+        {interpreter} {compiler} {arguments} $(cat {sources})
 
         """.format(
-          compiler = compiler.path,
-          arguments = " ".join(arguments),
-          sources = sorted_sources.path
-        ),
+            interpreter = interpreter.path,
+            compiler = compiler.path,
+            arguments = " ".join(arguments),
+            sources = sorted_sources.path
+            ),
     mnemonic = "OcamlCompile",
     progress_message = "Compiling ({_in}) to ({out})".format(
       _in=", ".join([ s.basename for s in sources]),

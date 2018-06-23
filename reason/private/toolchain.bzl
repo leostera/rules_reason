@@ -6,6 +6,7 @@ def _reason_toolchain_impl(ctx):
           ocamlc = ctx.file.ocamlc,
           ocamlopt = ctx.file.ocamlopt,
           ocamldep = ctx.file.ocamldep,
+          ocamlrun = ctx.file.ocamlrun,
           ocaml_stdlib = ctx.attr.ocaml_stdlib,
           refmt = ctx.file.refmt,
           )
@@ -43,6 +44,12 @@ _reason_toolchain = rule(
             executable = True,
             cfg = "target",
             ),
+        "ocamlrun": attr.label(
+            mandatory = True,
+            allow_single_file = True,
+            executable = True,
+            cfg = "target",
+            ),
         "ocaml_stdlib": attr.label(
             mandatory = True,
             allow_files = True,
@@ -65,6 +72,7 @@ def reason_toolchain(
     ocamlc,
     ocamlopt,
     ocamldep,
+    ocamlrun,
     refmt,
     **kwargs
     ):
@@ -76,6 +84,7 @@ def reason_toolchain(
     ocamlc: the Ocaml bytecode compiler
     ocamlopt: the Ocaml native compiler
     ocamldep: the Ocaml dependency tool
+    ocamlrun: the Ocaml bytecode interpreter
     ocaml_stdlib: a filegroup with the standard library compiled for Ocaml
     refmt: the standard ReasonML reformatting tool
   """
@@ -90,6 +99,7 @@ def reason_toolchain(
       ocamlc = ocamlc,
       ocamlopt = ocamlopt,
       ocamldep = ocamldep,
+      ocamlrun = ocamlrun,
       refmt = refmt,
   )
 
