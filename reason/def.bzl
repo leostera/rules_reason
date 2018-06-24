@@ -20,3 +20,8 @@ load(
     "ocaml_native_binary",
     "ocaml_bytecode_binary",
     )
+
+load(
+    "@com_github_ostera_rules_reason//reason/private:ocaml_module.bzl",
+    "ocaml_module",
+    )

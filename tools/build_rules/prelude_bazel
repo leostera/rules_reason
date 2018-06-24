@@ -2,5 +2,7 @@ load(
     "@com_github_ostera_rules_reason//reason:def.bzl",
     "reason_module",
     "bs_module",
+    "ocaml_module",
     "ocaml_native_binary",
+    "ocaml_bytecode_binary",
 )

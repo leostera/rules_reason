@@ -7,49 +7,47 @@ load(
 
 load(
   ":providers.bzl",
-  "ReasonModuleInfo",
-	"MlModuleInfo",
 	"CompiledMlModuleInfo",
 )
 
-def _ocaml_binary_impl(ctx):
+def _ocaml_module_impl(ctx):
   platform = ctx.attr.toolchain[platform_common.ToolchainInfo]
 
   stdlib = platform.ocaml_stdlib.files.to_list()
   stdlib_path = stdlib[0].dirname
 
   interpreter = platform.ocamlrun
+  compiler = platform.ocamlc
 
-  compiler = None
-  if ctx.attr.target == "native":
-    compiler = platform.ocamlopt
-  if ctx.attr.target == "bytecode":
-    compiler = platform.ocamlc
+  libfile = ctx.actions.declare_file(ctx.attr.name+".lib")
 
-  if compiler == None:
-    fail("Could not choose a compiler for target "+ctx.attr.target)
-
-  binfile = ctx.actions.declare_file(ctx.attr.name)
-
-  runfiles = []
   sources = []
-  outputs = [binfile]
   imports = []
+  outputs = [libfile]
+  runfiles = []
 
   for s in ctx.attr.srcs:
-    mod = s[ReasonModuleInfo]
-    sources.extend(mod.outs)
-    for o in mod.outs:
-      imports.extend([o.dirname])
+    for f in s.files.to_list():
+      name = f.basename
+      if ML_EXT in name or MLI_EXT in name:
+        sources.extend([f])
+        # .ml -> [ .cmi, .cmt ]
+        cmfiles = [
+            ctx.actions.declare_file(f.basename.replace(ML_EXT, ".cmt")),
+            ctx.actions.declare_file(f.basename.replace(ML_EXT, ".cmi"))
+            ]
+        outputs.extend(cmfiles)
+
+  runfiles.extend(sources)
 
   for d in ctx.attr.deps:
     dep = d[CompiledMlModuleInfo]
-    for o in dep.outs:
-      # TODO(@ostera): these should be already compiled
-      sources.extend([o])
     runfiles.extend(dep.outs)
 
-  runfiles.extend(sources)
+  print("sources", sources)
+  print("outputs", outputs)
+  print("runfiles", runfiles)
+
   runfiles.extend(stdlib)
 
   import_paths = []
@@ -75,10 +73,6 @@ def _ocaml_binary_impl(ctx):
   )
   runfiles.extend([sorted_sources])
 
-  special_flags = []
-  if ctx.attr.target == "bytecode":
-    special_flags.extend(["-custom"])
-
   arguments = [
       # TODO(@ostera): make this configurable by a provider
       # Better error reporting
@@ -87,15 +81,14 @@ def _ocaml_binary_impl(ctx):
 
       # TODO(@ostera): declare annotations as files as well
       "-bin-annot",
-      ] + special_flags + [
 
       # Imports, includes current module and pervasives
       "-I", stdlib_path,
       ] + import_paths + [
 
-      # Output name
+      "-c",
       "-o",
-      binfile.path,
+      libfile.path
       ]
 
   ctx.actions.run_shell(
@@ -106,12 +99,14 @@ def _ocaml_binary_impl(ctx):
         #!/bin/bash
 
         {interpreter} {compiler} {arguments} $(cat {sources})
+        echo remove_me > {lib}
 
         """.format(
             interpreter = interpreter.path,
             compiler = compiler.path,
             arguments = " ".join(arguments),
-            sources = sorted_sources.path
+            sources = sorted_sources.path,
+            lib = libfile.path,
             ),
     mnemonic = "OcamlCompile",
     progress_message = "Compiling ({_in}) to ({out})".format(
@@ -124,23 +119,16 @@ def _ocaml_binary_impl(ctx):
     DefaultInfo(
       files=depset(outputs),
       runfiles=ctx.runfiles(files=runfiles),
-      executable=binfile,
     ),
-    MlModuleInfo(
+    CompiledMlModuleInfo(
       name=ctx.label.name,
-      deps=ctx.attr.deps,
       srcs=sources,
       outs=outputs,
-      target=ctx.attr.target,
-      )
+    ),
   ]
 
-_ocaml_binary = rule(
+ocaml_module = rule(
     attrs = {
-        "target": attr.string(
-           mandatory = True,
-           values = [ "native", "bytecode" ],
-           ),
         "srcs": attr.label_list(
             allow_files = [ML_EXT, MLI_EXT],
             mandatory = True,
@@ -151,12 +139,5 @@ _ocaml_binary = rule(
             providers = [platform_common.ToolchainInfo],
             ),
         },
-    executable=True,
-    implementation = _ocaml_binary_impl,
+    implementation = _ocaml_module_impl,
     )
-
-def ocaml_native_binary(**kwargs):
-  _ocaml_binary(target="native", **kwargs)
-
-def ocaml_bytecode_binary(**kwargs):
-  _ocaml_binary(target="bytecode", **kwargs)
