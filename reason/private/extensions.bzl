@@ -1,10 +1,15 @@
 BS_CONFIG_EXT = ".json"
 BS_EXT = ".js"
+CMA_EXT = ".cma"
 CMI_EXT = ".cmi"
+CMJ_EXT = ".cmj"
 CMO_EXT = ".cmo"
 CMT_EXT = ".cmt"
-CM_EXTS =  [CMI_EXT, CMO_EXT, CMT_EXT, ".cmj"]
+CMXA_EXT = ".cmxa"
+CMX_EXT = ".cmx"
+CM_EXTS =  [CMI_EXT, CMO_EXT, CMT_EXT, CMJ_EXT]
 MLI_EXT = ".mli"
 ML_EXT = ".ml"
+O_EXT = ".o"
 REI_EXT = ".rei"
 RE_EXT = ".re"
