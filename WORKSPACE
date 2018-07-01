@@ -55,7 +55,16 @@ reason_register_toolchains(
     nixpkgs_sha256 = "0c5291bcf7d909cc4b18a24effef03f717d6374de377f91324725c646d494857",
 )
 
+###
+### Register Nexsted Workspaces
+###
+
 local_repository(
     name = "examples",
     path = "examples",
+)
+
+local_repository(
+    name = "retool",
+    path = "retool",
 )
