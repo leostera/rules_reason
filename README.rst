@@ -10,12 +10,12 @@ ReasonML / BuckleScript Rules
 .. image:: https://travis-ci.org/ostera/rules_reason.svg?branch=master
   :target: https://travis-ci.org/ostera/rules_reason
 
-A collection of ReasonML and BuckleScript rules and tools for Bazel.
+A collection of OCaml, ReasonML, and BuckleScript rules and tools for Bazel.
 
   Note: this is alpha software! I'm building it to properly integrate a ReasonML
   application into a bigger project that builds with Bazel.
 
-This projet relies two prerequisites:
+This projet relies on two prerequisites:
 
 1. ``nix``, the purely functional package manager, which is used for installing
   the ReasonML tooling (``refmt`` specifically), ``opam``, ``yarn`` and ``node``
@@ -41,7 +41,7 @@ Begin by adding the following to your ``WORKSPACE``:
 
 .. code:: bzl
 
-  workspace(name="example")
+  workspace(name = "retool")
 
   ###
   ### Reason Rules!
@@ -51,7 +51,7 @@ Begin by adding the following to your ``WORKSPACE``:
 
   http_archive(
       name = "com_github_ostera_rules_reason",
-      sha256 = "" # fill in this SHA for proper hermeticity!,
+      sha256 = "",
       strip_prefix = "rules_reason-%s" % (rules_reason_version,),
       urls = ["https://github.com/ostera/rules_reason/archive/%s.zip" % (rules_reason_version,)],
       )
@@ -63,13 +63,12 @@ Begin by adding the following to your ``WORKSPACE``:
   load(
       "@com_github_ostera_rules_reason//reason/repositories:nix.bzl",
       "nix_repositories",
-      )
+  )
 
   nix_repositories(
-      # commit hash of the Nix tool version
-      nix_version = "cd2ed701127ebf7f8f21d37feb1d678e4fdf85e5",
-      nix_sha256 = "084d0560c96bbfe5c210bd83b8df967ab0b1fcb330f2e2f30da75a9c46da0554",
-      )
+      nix_sha256 = "28121f6eb3d6c5b4c1fc9f716953ce8b0a793b841d0e9de095977b3ade06f92d",
+      nix_version = "20a78f74f8ac70d1099ff0d214cd00b25820da03",
+  )
 
   ###
   ### Register Reason Toolchain
@@ -77,21 +76,35 @@ Begin by adding the following to your ``WORKSPACE``:
 
   load(
       "@com_github_ostera_rules_reason//reason:def.bzl",
-      "reason_register_toolchains"
-      )
+      "reason_register_toolchains",
+  )
 
   reason_register_toolchains(
-      # commit hash of the BuckleScript version
-      bs_version = "493c4c45b5c248a39962af60cba913f425d57420",
-      bs_sha256 = "3072a709d831285ab5e16eb906aaa4e56821321adc4c7f7c0eb7aa1df7bad7a6",
-
-      # commit hash of the NixPkgs version
+      bs_sha256 = "db3f37eb27bc1653c3045e97adaa83e800dff55ce093d78ddfe85e85165e2125",
+      bs_version = "939ef1e1e874c80ff9df74b16dab1dbe2e2df289",
       nixpkgs_revision = "d91a8a6ece07f5a6df82aa5dc02030d9c6724c27",
-      )
+      nixpkgs_sha256 = "0c5291bcf7d909cc4b18a24effef03f717d6374de377f91324725c646d494857",
+  )
+
+  ################################################################################
+  #
+  #   Declare dependencies
+  #
+  ################################################################################
+
+  load(
+      "//3rdparty:load.bzl",
+      "declare_dependencies"
+  )
+
+  declare_dependencies()
 
 
 Use ``reason_module`` to compile a group of ``.re`` and ``.rei`` files into their
 corresponding ``.ml`` and ``.mli`` counterparts.
+
+Further consume these outputs with ``ocaml_module``, ``bs_module``,
+``ocaml_bytecode_binary``, or ``ocaml_native_binary``.
 
 Compiling to Javascript
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -188,9 +201,8 @@ You can access the ``rtop`` by running:
 What's next?
 ------------
 
-1. Better ``rtop`` support
-#. DevFlow: Generating Merlin and pointing IDEs to the right places
 #. DevFlow: Dependencies
+#. DevFlow: Generating Merlin and pointing IDEs to the right places
 #. Rules: ``*_test``
 #. DevFlow: Auto-rebuild
 #. Rules: ``node_binary``
