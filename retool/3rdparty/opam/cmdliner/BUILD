@@ -1,5 +1,5 @@
 load(
-    "@com_github_ostera_rules_reason",
+    "@com_github_ostera_rules_reason//reason:def.bzl",
     "ocaml_module",
     )
 

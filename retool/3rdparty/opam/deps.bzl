@@ -1,4 +1,7 @@
-load("//reason:def.bzl", "opam_package")
+load(
+    "@com_github_ostera_rules_reason//reason:def.bzl",
+    "opam_package",
+    )
 
 def deps():
   return [
