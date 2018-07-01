@@ -35,7 +35,7 @@ load(
 )
 
 nix_repositories(
-    nix_sha256 = "",
+    nix_sha256 = "28121f6eb3d6c5b4c1fc9f716953ce8b0a793b841d0e9de095977b3ade06f92d",
     nix_version = "20a78f74f8ac70d1099ff0d214cd00b25820da03",
 )
 
