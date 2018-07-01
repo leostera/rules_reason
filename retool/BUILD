@@ -10,5 +10,8 @@ reason_module(
 
 ocaml_native_binary(
     name = "retool",
-    srcs = [":srcs"],
+    srcs = [
+        ":srcs",
+        "//3rdparty/opam/cmdliner"
+        ],
 )
