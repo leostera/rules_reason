@@ -9,7 +9,14 @@ load(
     "bazel_repositories",
 )
 
-bazel_repositories()
+bazel_repositories(
+    bazel_version = "0.15.0",
+    bazel_sha256 = "",
+    rules_go_version = "436452edc29a2f1e0edc22d180fbb57c27e6d0af",
+    rules_go_sha256 = "09669ffc724b21ab3ee8fd58c8b52b27dd216552add9098daf16e0f1d3654626",
+    buildtools_version = "49a6c199e3fbf5d94534b2771868677d3f9c6de9",
+    buildtools_sha256 = "edf39af5fc257521e4af4c40829fffe8fba6d0ebff9f4dd69a6f8f1223ae047b",
+    )
 
 load(
     "@com_github_ostera_rules_reason//reason/repositories:tools.bzl",
