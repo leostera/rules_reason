@@ -18,3 +18,10 @@ MlBinary = provider(fields = {
   "bin": "the compiled binary for this module",
   "target": "ther compilation target of this module: native or bytecode"
 })
+
+MlCompiledModule = provider(fields = {
+  "name": "the name of this module",
+  "deps": "the dependencies of this module",
+  "srcs": "the source files for this module",
+  "outs": "the compiled sources for this module",
+})
