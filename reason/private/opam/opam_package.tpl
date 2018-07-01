@@ -2,5 +2,8 @@ package(default_visibility = ["//visibility:public"])
 
 filegroup(
   name = "srcs",
-  srcs = glob(["**/*.ml", "**/*.mli"]),
+  srcs = glob([
+    "src/**/*.ml",
+    "src/**/*.mli",
+  ]),
 )
