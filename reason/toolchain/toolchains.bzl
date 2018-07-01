@@ -123,6 +123,7 @@ genrule(
 
 def _declare_toolchain_repositories(
     nixpkgs_revision,
+    nixpkgs_sha256,
     bs_version,
     bs_sha256,
     ):
@@ -133,6 +134,7 @@ def _declare_toolchain_repositories(
   nixpkgs_git_repository(
       name = "reason-nixpkgs",
       revision = nixpkgs_revision,
+      sha256 = nixpkgs_sha256,
       )
 
   nixpkgs_package(
@@ -180,7 +182,12 @@ def _declare_toolchain_repositories(
     build_file_content = BS_BUILD_FILE
     )
 
-def reason_register_toolchains(nixpkgs_revision, bs_version, bs_sha256):
+def reason_register_toolchains(
+    nixpkgs_revision,
+    nixpkgs_sha256,
+    bs_version,
+    bs_sha256
+    ):
   """
   Declares a ReasonML/BuckleScript toolchain to use, downloads dependencies and
   initializes other repositories (such as `@nixpkgs`, `@reason`, and `@bs`).
@@ -188,10 +195,16 @@ def reason_register_toolchains(nixpkgs_revision, bs_version, bs_sha256):
   Args:
     nixpkgs_revision: a tag or commit sha256 for the specific version of nixpkgs
                       from where to install the appropriate ReasonML binaries
+    nixpkgs_sha256: the integrity checksum to verify the nixpkgs repository
     bs_version: a commit sha256 for the specific version of BuckleScript code
     bs_sha256: the integrity checksum to verify the BuckleScript source
   """
-  _declare_toolchain_repositories(nixpkgs_revision, bs_version, bs_sha256)
+  _declare_toolchain_repositories(
+      nixpkgs_revision,
+      nixpkgs_sha256,
+      bs_version,
+      bs_sha256
+      )
 
 def declare_default_toolchain():
   """The default ReasonML/BuckleScript toolchain.
