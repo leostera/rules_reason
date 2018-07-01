@@ -138,11 +138,10 @@ Upon downloading and verifying the `archive`, this rule should create a build
 file that will compile the OCaml sources, listing the required dependencies:
 
 ```
-ocaml_module(
+filegroup(
   visibility = ["//visibility:public"],
-  name = "${pkg_name}",
+  name = "srcs",
   srcs = glob(["**/*.ml", "**/*.mli"]),
-  deps = ${depends},
 )
 ```
 
