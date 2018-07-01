@@ -8,7 +8,7 @@ load(
 load(
   ":providers.bzl",
   "ReasonModuleInfo",
-	"MlModuleInfo",
+	"MlBinary",
 )
 
 def _ocaml_binary_impl(ctx):
@@ -124,11 +124,11 @@ def _ocaml_binary_impl(ctx):
       runfiles=ctx.runfiles(files=runfiles),
       executable=binfile,
     ),
-    MlModuleInfo(
+    MlBinary(
       name=ctx.label.name,
       deps=ctx.attr.deps,
       srcs=sources,
-      outs=outputs,
+      bin=binfile,
       target=ctx.attr.target,
       )
   ]
