@@ -1,7 +1,5 @@
 load(
     "//reason/private:extensions.bzl",
-    "BS_CONFIG_EXT",
-    "BS_EXT",
     "CM_EXTS",
     "MLI_EXT",
     "ML_EXT",
@@ -23,7 +21,7 @@ load(
     _stdlib = "stdlib",
     )
 
-def _ocaml_module(ctx):
+def _ocaml_module_impl(ctx):
   toolchain = ctx.attr.toolchain[platform_common.ToolchainInfo]
 
   # Get standard library files and path
@@ -91,5 +89,5 @@ ocaml_module = rule(
           providers = [platform_common.ToolchainInfo],
           ),
       },
-  implementation = _ocaml_module,
+  implementation = _ocaml_module_impl,
   )
