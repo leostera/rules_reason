@@ -105,7 +105,62 @@ bs_module(
 )
 ```
 
-### Generating the Dependency Tree with `retool`
+## Repository Rules
+
+### `opam_package`
+
+Packages in `opam` are listed in [a GitHub
+repository](https://github.com/ocaml/opam-repository)
+
+This repository has information about the packages under the following path:
+
+```sh
+${root_url}/tree/master/packages/${pkg}/${pkg}.${version}
+```
+
+Sample: [`cmdliner`](https://github.com/ocaml/opam-repository/tree/master/packages/cmdliner/cmdliner.1.0.2)
+
+And it contains for each one of them 3 files:
+
+* `descr`, a plain-text description of the package
+* `opam`, the opam package description file, which includes dependencies
+* `url`, a plain-text with an archive url and an md5 checksum
+
+This repository rule should include:
+
+* `pkg_name`, the name of the package as listed in `opam`
+* `pkg_version`, the version of the package
+* `archive`, the exact url to download the contents of this package
+* `sha256`, the sha256 that will be used to verify the contents of the package
+* `depends`, a list of labels that this package depends on
+
+Upon downloading and verifying the `archive`, this rule should create a build
+file that will compile the OCaml sources, listing the required dependencies:
+
+```
+ocaml_module(
+  visibility = ["//visibility:public"],
+  name = "${pkg_name}",
+  srcs = glob(["**/*.ml", "**/*.mli"]),
+  deps = ${depends},
+)
+```
+
+### `redex_package`
+
+Packages in `redex` are listed in [a GitHub repository](https://github.com/redex/data/blob/master/sources.json)
+
+### `npm_package`
+
+Packages in `npm` are listed in their internal API:
+
+```
+https://api.npms.io/v2/package/${pkg_name}
+```
+
+Sample: [`reason-future`](https://api.npms.io/v2/package/reason-future)
+
+## Generating the Dependency Tree with `retool`
 
 Upon calling the `retool` binary, available through
 
