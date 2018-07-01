@@ -81,21 +81,13 @@ genrule(
 BS_BUILD_FILE="""
 filegroup(
     visibility = ["//visibility:public"],
-    name = "bs_srcs",
+    name = "srcs",
     srcs = glob([
         "*",
         "scripts/**/*",
         "lib/**/*",
         "jscomp/**/*",
-        ]),
-    )
-
-filegroup(
-    visibility = ["//visibility:public"],
-    name = "ocaml_srcs",
-    srcs = glob([
-        "vendor/ocaml/**/*",
-        "vendor/ocaml/**/.*",
+        "vendor/**/*",
         ]),
     )
 """

@@ -3,42 +3,6 @@ package(default_visibility = ["//:__subpackages__"])
 load("//reason/private:utils.bzl", "unpack_filegroup")
 
 """
-Build the patched Ocaml compiler included with BuckleScript.
-
-The output of this rule is a tar file with all of the compiled Ocaml platform.
-"""
-
-genrule(
-    name = "make_patched_ocaml",
-    srcs = ["@bs//:ocaml_srcs"],
-    outs = ["ocaml_platform.tar"],
-    cmd = """\
-      #!/bin/bash
-
-      # compute this package's root directory
-      pkg_root=$$(dirname $(location :ocaml_platform.tar))
-
-      # copy over ocaml sources
-      cp -fR external/bs/vendor $$pkg_root;
-
-      pushd $$pkg_root/vendor/ocaml;
-
-        ./configure --prefix $$(pwd);
-        make world.opt -j4;
-        make install;
-
-      popd;
-
-      # output the compiled workspace
-      tar --transform "s=$$pkg_root/==g" \
-          --create $$pkg_root \
-          --dereference \
-          > $(location :ocaml_platform.tar);
-
-      """,
-)
-
-"""
 Build the BuckleScript compiler using the patched Ocaml compiler.
 
 The output of this rule is a tar file with all of the compiled BuckleScript
@@ -47,31 +11,30 @@ platform.
 
 genrule(
     name = "make_world",
-    srcs = [
-        "@bs//:bs_srcs",
-        ":ocaml_platform.tar",
-    ],
+    srcs = ["@bs//:srcs"],
     outs = ["bs_platform.tar"],
     cmd = """\
       #!/bin/bash
 
       # compute this package's root directory
-      pkg_root=$$(dirname $(location :ocaml_platform.tar))
+      pkg_root=$$(dirname $(location :bs_platform.tar))
 
       # copy over all bucklescript sources
       cp -fR external/bs/* $$pkg_root;
 
-      # unpack patched ocaml on top
-      tar --extract \
-          --file $$(pwd)/$(location :ocaml_platform.tar) \
-          --directory $(@D);
+      # build ocaml compiler first
+      pushd $$pkg_root/vendor/ocaml;
 
+        ./configure --prefix $$(pwd);
+        make world.opt -j4;
+        make install;
+
+      popd;
+
+      # build bucklescript compiler second!
       pushd $$pkg_root;
 
-        # build the world!
         PATH=$$(pwd)/vendor/ocaml/bin:$$PATH make;
-
-        # put files in the right place (locally, doesn't do any global copies)
         make install;
 
       popd;
@@ -81,7 +44,6 @@ genrule(
           --create $$pkg_root \
           --dereference \
           > $(location :bs_platform.tar);
-
   """,
 )
 
