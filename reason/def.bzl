@@ -4,7 +4,13 @@ load(
     "reason_register_toolchains",
     )
 
-# Library Targets
+# Dependency rules
+load(
+    "@com_github_ostera_rules_reason//reason/private/opam:opam_package.bzl",
+    "opam_package"
+    )
+
+# Binary/Library target rules
 load(
     "@com_github_ostera_rules_reason//reason/private:reason_module.bzl",
     "reason_module",

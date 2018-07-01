@@ -5,7 +5,7 @@ load(
 
 package(default_visibility = ["//:__subpackages__"])
 
-exports_files(["ocamlrun.tpl"])
+exports_files(["ocamlrun.tpl", "opam_package.tpl"])
 
 genrule(
     name = "init_opam",

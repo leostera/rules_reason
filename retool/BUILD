@@ -12,6 +12,6 @@ ocaml_native_binary(
     name = "retool",
     srcs = [
         ":srcs",
-        "//3rdparty/opam/cmdliner"
+        # "//3rdparty/opam/cmdliner"
         ],
 )
