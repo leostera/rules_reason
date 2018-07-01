@@ -1,4 +1,4 @@
-package(default_visibility = ["//retool:__subpackages__"])
+package(default_visibility = ["//:__subpackages__"])
 
 reason_module(
     name = "srcs",
@@ -9,11 +9,11 @@ reason_module(
 )
 
 ocaml_native_binary(
-    name = "retool",
+    name = "bin",
     srcs = [
         ":srcs",
-        ],
+    ],
     deps = [
         "//3rdparty/opam/cmdliner",
-        ]
+    ],
 )
