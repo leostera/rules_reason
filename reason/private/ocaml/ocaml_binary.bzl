@@ -1,6 +1,7 @@
 load(
     "//reason/private:extensions.bzl",
     "CM_EXTS",
+    "CMX_EXT",
     "MLI_EXT",
     "ML_EXT",
 )
@@ -17,12 +18,14 @@ load(
     _build_import_paths = "build_import_paths",
     _declare_outputs = "declare_outputs",
     _gather_files = "gather_files",
-    _ocaml_compile = "ocaml_compile",
+    _ocaml_compile_binary = "ocaml_compile_binary",
     _ocamldep = "ocamldep",
     _stdlib = "stdlib",
     )
 
 def _ocaml_binary_impl(ctx):
+  name = ctx.attr.name
+
   toolchain = ctx.attr.toolchain[platform_common.ToolchainInfo]
 
   # Declare binary file
@@ -35,7 +38,7 @@ def _ocaml_binary_impl(ctx):
   (sources, imports, deps) = _gather_files(ctx)
 
   # Run ocamldep on the sources to compile in right order
-  sorted_sources = _ocamldep(ctx, sources, toolchain)
+  sorted_sources = _ocamldep(ctx, name, sources, toolchain)
 
   # Declare outputs
   outputs = [binfile]
@@ -51,19 +54,20 @@ def _ocaml_binary_impl(ctx):
   import_paths = _build_import_paths(imports, stdlib_path)
 
   special_flags = []
-  if ctx.attr.target == "bytecode":
-    special_flags.extend(["-custom"])
+  if ctx.attr.target == TARGET_BYTECODE:
+    special_flags = ["-custom"]
 
   arguments = [ "-color", "always", "-bin-annot" ] + special_flags + import_paths + [ "-o", binfile.path ]
 
-  _ocaml_compile(
+  _ocaml_compile_binary(
     ctx = ctx,
     arguments = arguments,
-    outputs = outputs,
+    binfile = binfile,
+    deps = deps,
     runfiles = runfiles,
     sorted_sources = sorted_sources,
     sources = sources,
-    target = TARGET_BYTECODE,
+    target = ctx.attr.target,
     toolchain = toolchain,
   )
 

@@ -9,7 +9,9 @@ load(
   "MLI_EXT",
   "ML_EXT",
   "CMI_EXT",
+  "CMX_EXT",
   "CMO_EXT",
+  "O_EXT",
 )
 
 TARGET_BYTECODE="bytecode"
@@ -69,20 +71,32 @@ def declare_outputs(ctx, sources):
     # declare compiled interface files
     if MLI_EXT in name:
       outputs.extend([
+          ctx.actions.declare_file(name),
           ctx.actions.declare_file(
               name.replace(MLI_EXT, CMI_EXT))])
 
     # declare compiled source filesc:w
     if ML_EXT in name and not MLI_EXT in name:
       outputs.extend([
-          ctx.actions.declare_file(
-              name.replace(ML_EXT, CMO_EXT)),
+          # Source
+          ctx.actions.declare_file(name),
+
           # Not obvious: a .ml file should be compiled to a .cmi as well
           # in case that there isn't a .mli with it, because other .mli
           # files will look for the .cmi file instead of the .cmo file
           # this duplication is harmless
           ctx.actions.declare_file(
               name.replace(ML_EXT, CMI_EXT)),
+
+          # Bytecode outputs
+          ctx.actions.declare_file(
+              name.replace(ML_EXT, CMO_EXT)),
+
+          # Binary outputs
+          ctx.actions.declare_file(
+              name.replace(ML_EXT, CMX_EXT)),
+          ctx.actions.declare_file(
+              name.replace(ML_EXT, O_EXT)),
           ])
 
   return depset(outputs).to_list()
@@ -96,6 +110,7 @@ def gather_files(ctx):
   for d in ctx.attr.deps:
     if MlCompiledModule in d:
       mod = d[MlCompiledModule]
+      deps.extend(mod.deps)
       deps.extend(mod.outs)
       imports.extend(mod.outs)
 
@@ -119,8 +134,8 @@ def gather_files(ctx):
       )
 
 
-def ocamldep(ctx, sources, toolchain):
-  sorted_sources = ctx.actions.declare_file(ctx.attr.name + "_sorted_sources")
+def ocamldep(ctx, name, sources, toolchain):
+  sorted_sources = ctx.actions.declare_file(name + "_sorted_sources")
 
   ctx.actions.run_shell(
       inputs=sources,
@@ -145,7 +160,7 @@ def ocamldep(ctx, sources, toolchain):
   return sorted_sources
 
 
-def ocaml_compile(
+def ocaml_compile_library(
     ctx,
     arguments,
     outputs,
@@ -156,41 +171,123 @@ def ocaml_compile(
     toolchain,
     ):
   """
-  Compile a given set of OCaml sources.
+  Compile a given set of OCaml .ml and .mli sources to their .cmo, .cmi, and
+  .cmx counterparts.
   """
-
-  compiler = select_compiler(toolchain, target)
 
   ctx.actions.run_shell(
     inputs = runfiles,
     outputs = outputs,
     tools = [
-        compiler,
+        toolchain.ocamlc,
+        toolchain.ocamlopt,
         toolchain.ocamlrun,
     ],
     command = """\
         #!/bin/bash
 
-        cat {sources}
+        # Compile .cmi and .cmo files
+        {ocamlrun} {ocamlc} {arguments} $(cat {sources})
 
-        {ocamlrun} {compiler} {arguments} $(cat {sources})
+        # Compile .cmx files
+        {ocamlrun} {ocamlopt} {arguments} $(cat {sources})
 
         mkdir -p {output_dir}
 
-        find {source_dir} -name "*.cm*" -exec cp {{}} {output_dir}/ \;
+        find {source_dir} \
+            -name "*.cm*" \
+            -exec cp {{}} {output_dir}/ \;
+
+        find {source_dir} \
+            -name "*.o" \
+            -exec cp {{}} {output_dir}/ \;
+
+        cp -f $(cat {sources}) {output_dir}/;
 
         """.format(
-            ocamlrun = toolchain.ocamlrun.path,
-            compiler = compiler.path,
             arguments = " ".join(arguments),
-            sources = sorted_sources.path,
-            source_dir = sources[0].dirname,
+            ocamlc = toolchain.ocamlc.path,
+            ocamlopt = toolchain.ocamlopt.path,
+            ocamlrun = toolchain.ocamlrun.path,
             output_dir = outputs[0].dirname,
+            source_dir = sources[0].dirname,
+            sources = sorted_sources.path,
             ),
-    mnemonic = "OCamlCompile",
+    mnemonic = "OCamlCompileLib",
     progress_message = "Compiling ({_in}) to ({out})".format(
       _in=", ".join([ s.basename for s in sources]),
       out=", ".join([ s.basename for s in outputs]),
+      ),
+    )
+
+def ocaml_compile_binary(
+    ctx,
+    arguments,
+    binfile,
+    deps,
+    runfiles,
+    sorted_sources,
+    sources,
+    target,
+    toolchain,
+    ):
+  """
+  Compile a given set of OCaml .ml and .mli sources to a single binary file
+  """
+
+  compiler = select_compiler(toolchain, target)
+
+  libs = []
+  for d in deps:
+    name = d.basename
+    if ML_EXT in name or MLI_EXT in name:
+      libs.extend([d])
+
+  ctx.actions.run_shell(
+    inputs = runfiles,
+    outputs = [binfile],
+    tools = [
+        toolchain.ocamlc,
+        toolchain.ocamlopt,
+        toolchain.ocamldep,
+        toolchain.ocamlrun,
+    ],
+    command = """\
+        #!/bin/bash
+
+        {ocamlrun} {ocamldep} \
+            -sort \
+            $(echo {libs} | tr " " "\n" | grep ".ml*") \
+            > .depend.all
+
+        cat .depend.all \
+            | tr " " "\n" \
+            | grep ".ml$" \
+            | sed "s/ml$/cmx/g" \
+            | xargs \
+            > .depend.cmx
+
+        {ocamlrun} {compiler} {arguments} $(cat .depend.cmx) $(cat {sources})
+
+        mkdir -p {output_dir}
+
+        find {source_dir} -name "{pattern}" -exec cp {{}} {output_dir}/ \;
+
+        """.format(
+            arguments = " ".join(arguments),
+            compiler = compiler.path,
+            libs = " ".join([l.path for l in libs]),
+            ocamldep = toolchain.ocamldep.path,
+            ocamlrun = toolchain.ocamlrun.path,
+            output_dir = binfile.dirname,
+            pattern = binfile.basename,
+            source_dir = sources[0].dirname,
+            sources = sorted_sources.path,
+            ),
+    mnemonic = "OCamlCompileLib",
+    progress_message = "Compiling ({_in}) to ({out})".format(
+      _in=", ".join([ s.basename for s in sources]),
+      out=binfile.basename
       ),
     )
 
