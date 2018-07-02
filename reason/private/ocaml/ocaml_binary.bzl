@@ -4,12 +4,12 @@ load(
     "CMX_EXT",
     "MLI_EXT",
     "ML_EXT",
-)
+    )
 
 load(
-  "//reason/private:providers.bzl",
-	"MlBinary",
-)
+    "//reason/private:providers.bzl",
+    "MlBinary",
+    )
 
 load(
     ":utils.bzl",

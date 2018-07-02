@@ -8,6 +8,16 @@ reason_module(
     ]),
 )
 
+ocaml_bytecode_binary(
+    name = "byte",
+    srcs = [
+        ":srcs",
+    ],
+    deps = [
+        "//3rdparty/opam/cmdliner",
+    ],
+)
+
 ocaml_native_binary(
     name = "bin",
     srcs = [
