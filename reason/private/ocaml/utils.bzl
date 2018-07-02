@@ -237,6 +237,7 @@ def ocaml_compile_binary(
 
   compiler = select_compiler(toolchain, target)
 
+  # Native binaries expect .cmx files while bytecode binaries expect .cmo
   expected_object_ext = CMX_EXT
   if target == TARGET_BYTECODE:
     expected_object_ext = CMO_EXT
