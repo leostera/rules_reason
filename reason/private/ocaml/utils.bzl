@@ -255,11 +255,13 @@ def ocaml_compile_binary(
     command = """\
         #!/bin/bash
 
+        # Run ocamldep on all of the ml and mli dependencies for this binary
         {ocamlrun} {ocamldep} \
             -sort \
             $(echo {libs} | tr " " "\n" | grep ".ml*") \
             > .depend.all
 
+        # Extract only the compiled cmx files to use as input for ocamlop
         cat .depend.all \
             | tr " " "\n" \
             | grep ".ml$" \
