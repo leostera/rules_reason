@@ -237,6 +237,10 @@ def ocaml_compile_binary(
 
   compiler = select_compiler(toolchain, target)
 
+  expected_object_ext = CMX_EXT
+  if target == TARGET_BYTECODE:
+    expected_object_ext = CMO_EXT
+
   libs = []
   for d in deps:
     name = d.basename
@@ -265,7 +269,7 @@ def ocaml_compile_binary(
         cat .depend.all \
             | tr " " "\n" \
             | grep ".ml$" \
-            | sed "s/ml$/cmx/g" \
+            | sed "s/\.ml$/{expected_object_ext}/g" \
             | xargs \
             > .depend.cmx
 
@@ -281,6 +285,7 @@ def ocaml_compile_binary(
             libs = " ".join([l.path for l in libs]),
             ocamldep = toolchain.ocamldep.path,
             ocamlrun = toolchain.ocamlrun.path,
+            expected_object_ext = expected_object_ext,
             output_dir = binfile.dirname,
             pattern = binfile.basename,
             source_dir = sources[0].dirname,
