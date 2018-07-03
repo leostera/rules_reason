@@ -11,10 +11,13 @@ let prompt_str =
   | Once => "once"
   | Never => "never";
 
-let rm = (prompt, recurse, files) => {
-  Printf.printf("prompt = %s\nrecurse = %b\nfiles = %s\n", prompt_str(prompt), recurse, String.concat(",", files));
-};
-
+let rm = (prompt, recurse, files) =>
+  Printf.printf(
+    "prompt = %s\nrecurse = %b\nfiles = %s\n",
+    prompt_str(prompt),
+    recurse,
+    String.concat(",", files),
+  );
 
 let files = Arg.(non_empty & pos_all(file, []) & info([], ~docv="FILE"));
 
@@ -39,22 +42,34 @@ let info = {
   let doc = "remove files or directories";
   let man = [
     `S(Manpage.s_description),
-    `P("$(tname) removes each specified $(i,FILE). By default it does not
+    `P(
+      "$(tname) removes each specified $(i,FILE). By default it does not
         remove directories, to also remove them and their contents, use the
-        option $(b,--recursive) ($(b,-r) or $(b,-R))."),
-    `P("To remove a file whose name starts with a `-', for example
-        `-foo', use one of these commands:"),
+        option $(b,--recursive) ($(b,-r) or $(b,-R)).",
+    ),
+    `P(
+      "To remove a file whose name starts with a `-', for example
+        `-foo', use one of these commands:",
+    ),
     `P("rm -- -foo"),
     `Noblank,
     `P("rm ./-foo"),
-    `P("$(tname) removes symbolic links, not the files referenced by the
-        links."),
+    `P(
+      "$(tname) removes symbolic links, not the files referenced by the
+        links.",
+    ),
     `S(Manpage.s_bugs),
     `P("Report bugs to <hehey at example.org>."),
     `S(Manpage.s_see_also),
     `P("$(b,rmdir)(1), $(b,unlink)(2)"),
   ];
-  Term.info("rm", ~version="0.0-alpha", ~doc, ~exits=Term.default_exits, ~man)
+  Term.info(
+    "rm",
+    ~version="0.0-alpha",
+    ~doc,
+    ~exits=Term.default_exits,
+    ~man,
+  );
 };
 
 let rm_t = Term.(const(rm) $ prompt $ recursive $ files);
