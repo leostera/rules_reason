@@ -2,10 +2,7 @@ package(default_visibility = ["//:__subpackages__"])
 
 reason_module(
     name = "srcs",
-    srcs = glob([
-        "*.re",
-        "*.rei",
-    ]),
+    srcs = ["Retool.re", "Retool_cli.re"],
 )
 
 ocaml_bytecode_binary(
