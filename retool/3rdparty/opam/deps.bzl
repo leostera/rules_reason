@@ -21,7 +21,7 @@ def deps():
         "deps": [],
         "pkg_name": "bigstringaf",
         "pkg_version": "0.2.0",
-        "sha256": "",
+        "sha256": "98102997fbb3acc8f70fbfb4fb864a5bcc8964ab605d115307f1e6c49334fac8",
         "type": "tar.gz",
     },
     {
@@ -30,7 +30,7 @@ def deps():
         "deps": [ "result", "bigstringaf" ],
         "pkg_name": "angstrom",
         "pkg_version": "0.10.0",
-        "sha256": "",
+        "sha256": "d73384483e8a2d9c6665acf0a4d6fa09e35075da0692e10183cb5589e1c9cf50",
         "type": "tar.gz",
     },
     {

@@ -21,8 +21,8 @@ ocaml_native_binary(
         ":srcs",
     ],
     deps = [
-        "//3rdparty/opam/cmdliner",
         "//3rdparty/opam/angstrom",
         "//3rdparty/opam/bigstringaf",
+        "//3rdparty/opam/cmdliner",
     ],
 )
