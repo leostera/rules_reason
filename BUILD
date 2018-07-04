@@ -36,3 +36,8 @@ alias(
     name = "refmt",
     actual = "//reason/private/bs:refmt.exe",
 )
+
+alias(
+    name = "rtop",
+    actual = "@reason-cli//:rtop"
+)

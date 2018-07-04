@@ -3,4 +3,6 @@ name: "retool"
 version: "HEAD"
 depends: [
   "cmdliner" {= "1.0.2"}
+  "angstrom" {= "0.10.0"}
+  "bigstringaf" {= "0.2.0"}
 ]
