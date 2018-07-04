@@ -2,7 +2,7 @@ package(default_visibility = ["//:__subpackages__"])
 
 reason_module(
     name = "srcs",
-    srcs = ["Retool.re", "Retool_cli.re"],
+    srcs = glob(["*.re", "*.rei"]),
 )
 
 ocaml_bytecode_binary(
@@ -22,5 +22,7 @@ ocaml_native_binary(
     ],
     deps = [
         "//3rdparty/opam/cmdliner",
+        "//3rdparty/opam/angstrom",
+        "//3rdparty/opam/bigstringaf",
     ],
 )
