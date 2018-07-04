@@ -1,61 +1,65 @@
 def _ocamlrun(ctx):
-  executable = ctx.actions.declare_file(ctx.attr.name)
+    executable = ctx.actions.declare_file(ctx.attr.name)
 
-  bytecode = ctx.file.src
-  ocamlrun = ctx.file._ocamlrun
-  template = ctx.file._runscript
+    bytecode = ctx.file.src
+    ocamlrun = ctx.file._ocamlrun
+    template = ctx.file._runscript
 
-  ctx.actions.expand_template(
-      template = template,
-      output = executable,
-      substitutions = {
-          "{ocamlrun}": ocamlrun.path,
-          "{bytecode}": bytecode.path,
-          },
-      is_executable = True,
-      )
+    ctx.actions.expand_template(
+        template=template,
+        output=executable,
+        substitutions={
+            "{ocamlrun}": ocamlrun.path,
+            "{bytecode}": bytecode.path,
+        },
+        is_executable=True,
+    )
 
-  runfiles = [ocamlrun, bytecode]
+    runfiles = [ocamlrun, bytecode]
 
-  return [
-      DefaultInfo(
-          runfiles=ctx.runfiles(files=runfiles),
-          executable=executable,
-          ),
-      ]
+    return [
+        DefaultInfo(
+            runfiles=ctx.runfiles(files=runfiles),
+            executable=executable,
+        ),
+    ]
+
 
 ocamlrun = rule(
- attrs = {
-     "src": attr.label(
-         allow_single_file=True,
-         mandatory=True,
-         ),
-     "_ocamlrun": attr.label(
-         default="//reason/private/opam:ocamlrun",
-         allow_single_file=True,
-         ),
-     "_runscript": attr.label(
-         default="//reason/private/opam:ocamlrun.tpl",
-         allow_single_file=True,
-         ),
-  },
-  implementation = _ocamlrun,
-  executable = True
-)
+    attrs={
+        "src":
+        attr.label(
+            allow_single_file=True,
+            mandatory=True,
+        ),
+        "_ocamlrun":
+        attr.label(
+            default="//reason/private/opam:ocamlrun",
+            allow_single_file=True,
+        ),
+        "_runscript":
+        attr.label(
+            default="//reason/private/opam:ocamlrun.tpl",
+            allow_single_file=True,
+        ),
+    },
+    implementation=_ocamlrun,
+    executable=True)
 
-def init_opam(ocaml_version = "4.03.0"):
-  """
-  Macro to initialize opam with the given OCaml version and extract the necessary
-  binaries and archives for the toolchain.
 
-  Args:
-    ocaml_version (string): a valid ocaml version, installable with opam
-  """
-  native.genrule(
-      name = "init_opam",
-      srcs = ["@opam"],
-      outs = ["opam_root.tar"],
-      cmd = """\
+def init_opam(ocaml_version="4.03.0"):
+    """
+    Macro to initialize opam with the given OCaml version and extract the necessary
+    binaries and archives for the toolchain.
+
+    Args:
+      ocaml_version (string): a valid ocaml version, installable with opam
+    """
+    native.genrule(
+        name="init_opam",
+        srcs=["@opam"],
+        outs=["opam_root.tar"],
+        cmd="""\
         #!/bin/bash
 
         # compute this package's root directory
@@ -76,20 +80,20 @@ def init_opam(ocaml_version = "4.03.0"):
             --dereference \
             > $(location :opam_root.tar);
 
-        """.format(ocaml_version = ocaml_version),
-  )
+        """.format(ocaml_version=ocaml_version),
+    )
 
-  native.genrule(
-      name = "extract_binaries",
-      srcs = [":opam_root.tar"],
-      outs = [
-        "ocaml_stdlib.tar",
-        "ocamlc.byte",
-        "ocamldep.byte",
-        "ocamlopt.byte",
-        "ocamlrun",
-      ],
-      cmd = """\
+    native.genrule(
+        name="extract_binaries",
+        srcs=[":opam_root.tar"],
+        outs=[
+            "ocaml_stdlib.tar",
+            "ocamlc.byte",
+            "ocamldep.byte",
+            "ocamlopt.byte",
+            "ocamlrun",
+        ],
+        cmd="""\
         #!/bin/bash
 
         tar --extract \
@@ -110,5 +114,5 @@ def init_opam(ocaml_version = "4.03.0"):
             --dereference \
             > $(location ocaml_stdlib.tar);
 
-        """.format(ocaml_version = ocaml_version),
-  )
+        """.format(ocaml_version=ocaml_version),
+    )

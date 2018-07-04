@@ -9,6 +9,7 @@ ocaml_module(
   name = "bigstringaf",
   srcs = [
     "@opam.bigstringaf//:srcs",
+    "@opam.bigstringaf//:c_srcs",
   ],
   deps = [
   ]
