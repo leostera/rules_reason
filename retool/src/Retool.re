@@ -4,5 +4,5 @@ Retool_opam.run("name: \"hello\"");
 Retool_opam.run("name: hello");
 Retool_opam.run("name   :     \"hello");
 Retool_opam.run(
-  "name: \"hello\"\r\nversion: \"alpha\"\r\nopam-version: \"stable\"\r\n",
+  "name: \"hello\" version: \"alpha\" opam-version: \"0.1-alpha\"",
 );
