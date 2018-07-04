@@ -1,9 +1,4 @@
 load(
-    "//reason/private/opam:opam_init.bzl",
-    "opam_init",
-)
-
-load(
     "//reason/private/opam:ocamlrun.bzl",
     "ocamlrun",
 )
@@ -11,11 +6,6 @@ load(
 package(default_visibility = ["//:__subpackages__"])
 
 exports_files(["ocamlrun.tpl", "opam_package.tpl"])
-
-opam_init(
-  name = "opam_root",
-  ocaml_version = "4.03.0"
-)
 
 genrule(
     name = "init_opam",
@@ -47,7 +37,7 @@ genrule(
 
 genrule(
     name = "extract_binaries",
-    srcs = [":opam_root"],
+    srcs = [":opam_root.tar"],
     outs = [
         "ocaml_stdlib.tar",
         "ocamlc.byte",
