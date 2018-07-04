@@ -14,17 +14,17 @@ alias(
 
 alias(
     name = "ocamlc",
-    actual = "//reason/private/opam:ocamlc",
+    actual = "//reason/private/opam:ocamlc.opt",
 )
 
 alias(
     name = "ocamlopt",
-    actual = "//reason/private/opam:ocamlopt",
+    actual = "//reason/private/opam:ocamlopt.opt",
 )
 
 alias(
     name = "ocamldep",
-    actual = "//reason/private/opam:ocamldep",
+    actual = "//reason/private/opam:ocamldep.opt",
 )
 
 alias(
