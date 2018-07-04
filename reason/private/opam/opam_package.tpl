@@ -5,5 +5,7 @@ filegroup(
   srcs = glob([
     "src/**/*.ml",
     "src/**/*.mli",
+    "lib/**/*.ml",
+    "lib/**/*.mli",
   ]),
 )
