@@ -1,8 +1,3 @@
-load(
-    "//reason/private/opam:ocamlrun.bzl",
-    "ocamlrun",
-)
-
 package(default_visibility = ["//:__subpackages__"])
 
 exports_files(["ocamlrun.tpl", "opam_package.tpl"])
@@ -40,9 +35,9 @@ genrule(
     srcs = [":opam_root.tar"],
     outs = [
         "ocaml_stdlib.tar",
-        "ocamlc.byte",
-        "ocamldep.byte",
-        "ocamlopt.byte",
+        "ocamlc.opt",
+        "ocamldep.opt",
+        "ocamlopt.opt",
         "ocamlrun",
     ],
     cmd = """\
@@ -54,9 +49,9 @@ genrule(
 
       ocaml_root=$$(pwd)/$(@D)/4.03.0
 
-      cp -f $$ocaml_root/bin/ocamlc   $(@D)/ocamlc.byte;
-      cp -f $$ocaml_root/bin/ocamldep $(@D)/ocamldep.byte;
-      cp -f $$ocaml_root/bin/ocamlopt $(@D)/ocamlopt.byte;
+      cp -f $$ocaml_root/bin/ocamlc.opt   $(@D)/ocamlc.opt;
+      cp -f $$ocaml_root/bin/ocamldep.opt $(@D)/ocamldep.opt;
+      cp -f $$ocaml_root/bin/ocamlopt.opt $(@D)/ocamlopt.opt;
       cp -f $$ocaml_root/bin/ocamlrun $(@D)/ocamlrun;
 
       # pack ml stdlib preserving paths
@@ -66,19 +61,4 @@ genrule(
           > $(location ocaml_stdlib.tar);
 
       """,
-)
-
-ocamlrun(
-    name = "ocamlc",
-    src = ":ocamlc.byte",
-)
-
-ocamlrun(
-    name = "ocamlopt",
-    src = ":ocamlopt.byte",
-)
-
-ocamlrun(
-    name = "ocamldep",
-    src = ":ocamldep.byte",
 )

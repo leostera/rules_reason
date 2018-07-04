@@ -203,21 +203,21 @@ def declare_default_toolchain():
 
     * `bs_stdlib = "//reason/private/bs:stdlib.ml"`
     * `bsc = "//reason/private/bs:bsc.exe"`
-    * `ocamlc = "//reason/private/opam:ocamlc"`
-    * `ocamlopt = "//reason/private/opam:ocamlopt"`
-    * `ocamldep = "//reason/private/opam:ocamldep"`
+    * `ocamlc = "//reason/private/opam:ocamlc.opt"`
+    * `ocamlopt = "//reason/private/opam:ocamlopt.opt"`
+    * `ocamldep = "//reason/private/opam:ocamldep.opt"`
     * `ocamlrun = "//reason/private/opam:ocamlrun"`
     * `ocaml_stdlib = "//reason/private/ocaml:stdlib.ml"`
     * `refmt = "//reason/private/bs:refmt.exe"`
 
-    """
+  """
     _reason_toolchain(
         name="bs",
         bs_stdlib="//reason/private/bs:stdlib.ml",
         bsc="//reason/private/bs:bsc.exe",
-        ocamlc="//reason/private/opam:ocamlc.byte",
-        ocamlopt="//reason/private/opam:ocamlopt.byte",
-        ocamldep="//reason/private/opam:ocamldep.byte",
+        ocamlc="//reason/private/opam:ocamlc.opt",
+        ocamlopt="//reason/private/opam:ocamlopt.opt",
+        ocamldep="//reason/private/opam:ocamldep.opt",
         ocamlrun="//reason/private/opam:ocamlrun",
         ocaml_stdlib="//reason/private/ocaml:stdlib.ml",
         refmt="//reason/private/bs:refmt.exe",

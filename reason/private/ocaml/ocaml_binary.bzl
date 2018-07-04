@@ -12,15 +12,25 @@ load(
 )
 
 load(
+    ":ocamldep.bzl",
+    _ocamldep="ocamldep",
+)
+
+load(
     ":utils.bzl",
     "TARGET_NATIVE",
     "TARGET_BYTECODE",
     _build_import_paths="build_import_paths",
     _declare_outputs="declare_outputs",
+    _find_base_libs="find_base_libs",
     _gather_files="gather_files",
-    _ocaml_compile_binary="ocaml_compile_binary",
-    _ocamldep="ocamldep",
+    _group_sources_by_language="group_sources_by_language",
     _stdlib="stdlib",
+)
+
+load(
+    ":compile.bzl",
+    _ocaml_compile_binary="ocaml_compile_binary",
 )
 
 
@@ -29,26 +39,28 @@ def _ocaml_binary_impl(ctx):
 
     toolchain = ctx.attr.toolchain[platform_common.ToolchainInfo]
 
-    # Declare binary file
-    binfile = ctx.actions.declare_file(ctx.attr.name)
-
     # Get standard library files and path
     (stdlib, stdlib_path) = _stdlib(toolchain)
+    base_libs = _find_base_libs(stdlib, ctx.attr.base_libs)
 
     # Get all sources needed for compilation
-    (sources, imports, deps) = _gather_files(ctx)
+    (sources, imports, deps, c_deps, stdlib_deps) = _gather_files(ctx)
+
+    # Split sources for sorting
+    (ml_sources, c_sources) = _group_sources_by_language(sources)
 
     # Run ocamldep on the sources to compile in right order
-    sorted_sources = _ocamldep(ctx, name, sources, toolchain)
+    sorted_sources = _ocamldep(ctx, name, ml_sources, toolchain)
 
-    # Declare outputs
-    outputs = [binfile]
+    # Declare binary file
+    binfile = ctx.actions.declare_file(ctx.attr.name)
 
     # Build runfiles
     runfiles = []
     runfiles.extend([sorted_sources])
     runfiles.extend(sources)
     runfiles.extend(deps)
+    runfiles.extend(c_deps)
     runfiles.extend(stdlib)
 
     # Compute import paths
@@ -64,18 +76,21 @@ def _ocaml_binary_impl(ctx):
     _ocaml_compile_binary(
         ctx=ctx,
         arguments=arguments,
+        base_libs=base_libs + stdlib_deps.to_list(),
         binfile=binfile,
+        c_deps=c_deps,
+        c_sources=c_sources,
         deps=deps,
+        ml_sources=ml_sources,
         runfiles=runfiles,
         sorted_sources=sorted_sources,
-        sources=sources,
         target=ctx.attr.target,
         toolchain=toolchain,
     )
 
     return [
         DefaultInfo(
-            files=depset(outputs),
+            files=depset([binfile]),
             runfiles=ctx.runfiles(files=runfiles),
             executable=binfile,
         ),
@@ -101,6 +116,8 @@ _ocaml_binary = rule(
             allow_files=[ML_EXT, MLI_EXT],
             mandatory=True,
         ),
+        "base_libs":
+        attr.string_list(default=[]),
         "deps":
         attr.label_list(allow_files=False),
         "toolchain":

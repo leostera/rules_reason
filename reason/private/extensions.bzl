@@ -1,3 +1,5 @@
+C_EXT = ".c"
+H_EXT = ".h"
 BS_CONFIG_EXT = ".json"
 BS_EXT = ".js"
 CMA_EXT = ".cma"

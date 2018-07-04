@@ -24,8 +24,16 @@ MlBinary = provider(
 
 MlCompiledModule = provider(
     fields={
-        "name": "the name of this module",
+        "base_libs": "the standard library dependencies required",
         "deps": "the dependencies of this module",
-        "srcs": "the source files for this module",
+        "name": "the name of this module",
         "outs": "the compiled sources for this module",
+        "srcs": "the source files for this module",
+    })
+
+CCompiledModule = provider(
+    fields={
+        "name": "the name of thsi module",
+        "outs": "the compiled .o files for this module",
+        "srcs": "the c sources",
     })

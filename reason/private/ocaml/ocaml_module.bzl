@@ -7,17 +7,30 @@ load(
     "ML_EXT",
 )
 
-load("//reason/private:providers.bzl", "MlCompiledModule")
+load(
+    "//reason/private:providers.bzl",
+    "MlCompiledModule",
+    "CCompiledModule",
+)
+
+load(
+    ":ocamldep.bzl",
+    _ocamldep="ocamldep",
+)
 
 load(
     ":utils.bzl",
-    "TARGET_BYTECODE",
     _build_import_paths="build_import_paths",
     _declare_outputs="declare_outputs",
+    _find_base_libs="find_base_libs",
     _gather_files="gather_files",
-    _ocaml_compile_library="ocaml_compile_library",
-    _ocamldep="ocamldep",
+    _group_sources_by_language="group_sources_by_language",
     _stdlib="stdlib",
+)
+
+load(
+    ":compile.bzl",
+    _ocaml_compile_library="ocaml_compile_library",
 )
 
 
@@ -28,15 +41,20 @@ def _ocaml_module_impl(ctx):
 
     # Get standard library files and path
     (stdlib, stdlib_path) = _stdlib(toolchain)
+    base_libs = _find_base_libs(stdlib, ctx.attr.base_libs)
 
     # Get all sources needed for compilation
-    (sources, imports, deps) = _gather_files(ctx)
+    (sources, imports, deps, c_deps, stdlib_deps) = _gather_files(ctx)
 
-    # Run ocamldep on the sources to compile in right order
-    sorted_sources = _ocamldep(ctx, name, sources, toolchain)
+    # Split sources for sorting
+    (ml_sources, c_sources) = _group_sources_by_language(sources)
+
+    # Run ocamldep on the ML sources to compile in right order
+    sorted_sources = _ocamldep(ctx, name, ml_sources, toolchain)
 
     # Declare outputs
-    outputs = _declare_outputs(ctx, sources)
+    (ml_outputs, c_outputs) = _declare_outputs(ctx, sources)
+    outputs = ml_outputs + c_outputs
 
     # Build runfiles
     runfiles = []
@@ -56,8 +74,8 @@ def _ocaml_module_impl(ctx):
         outputs=outputs,
         runfiles=runfiles,
         sorted_sources=sorted_sources,
-        sources=sources,
-        target=TARGET_BYTECODE,
+        ml_sources=ml_sources,
+        c_sources=c_sources,
         toolchain=toolchain,
     )
 
@@ -67,7 +85,17 @@ def _ocaml_module_impl(ctx):
             runfiles=ctx.runfiles(files=runfiles),
         ),
         MlCompiledModule(
-            name=ctx.attr.name, srcs=sources, deps=deps, outs=outputs)
+            name=ctx.attr.name,
+            srcs=ml_sources,
+            deps=deps,
+            base_libs=base_libs,
+            outs=ml_outputs,
+        ),
+        CCompiledModule(
+            name=ctx.attr.name,
+            srcs=c_sources,
+            outs=c_outputs,
+        ),
     ]
 
 
@@ -83,6 +111,8 @@ ocaml_module = rule(
             allow_files=False,
             default=[],
         ),
+        "base_libs":
+        attr.string_list(default=[]),
         "toolchain":
         attr.label(
             # TODO(@ostera): rename this target to managed-platform
