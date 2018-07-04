@@ -10,10 +10,29 @@ def declare_opam(dep):
     pkg_name = dep["pkg_name"],
     pkg_version = dep["pkg_version"],
     sha256 = dep["sha256"],
+    type = dep["type"],
   )
 
 def deps():
   return [
+    {
+        "name": "bigstringaf",
+        "archive": "https://github.com/inhabitedtype/bigstringaf/archive/0.2.0.tar.gz",
+        "deps": [],
+        "pkg_name": "bigstringaf",
+        "pkg_version": "0.2.0",
+        "sha256": "",
+        "type": "tar.gz",
+    },
+    {
+        "name": "angstrom",
+        "archive": "https://github.com/inhabitedtype/angstrom/archive/0.10.0.tar.gz",
+        "deps": [ "result", "bigstringaf" ],
+        "pkg_name": "angstrom",
+        "pkg_version": "0.10.0",
+        "sha256": "",
+        "type": "tar.gz",
+    },
     {
         "name": "cmdliner",
         "archive": "http://erratique.ch/software/cmdliner/releases/cmdliner-1.0.2.tbz",
@@ -21,6 +40,7 @@ def deps():
         "pkg_name": "cmdliner",
         "pkg_version": "1.0.2",
         "sha256": "414ea2418fca339590abb3c18b95e7715c1086a1f7a32713a492ba1825bc58a2",
+        "type": "tar.bz2",
     },
   ]
 
