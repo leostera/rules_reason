@@ -29,22 +29,24 @@ let is_eol =
 
 let is_char = (a, b) => a == b;
 
+let is_blank = x => is_space(x) || is_eol(x);
+
 let spaces = skip_while(is_space);
-
 let eol = skip_while(is_eol);
-
-let blank = spaces <|> eol;
+let blank = skip_while(is_blank);
 
 let colon = char(':');
-let label = x => blank *> string(x) *> colon *> blank <?> "Label=" ++ x;
+let label = x => string(x) *> spaces *> colon <?> "Label=" ++ x;
 
 let is_quote = is_char('"');
 let quote = char('"');
 let quoted = quote *> take_till(is_quote) <* quote <?> "Quoted text";
 
-let name = label("name") *> quoted;
-let version = label("version") *> quoted;
-let opam_version = label("opam-version") *> quoted;
+let attr = name => blank *> label(name) *> spaces *> quoted <?> "Attr=" ++ name;
+
+let name = attr("name");
+let version = attr("version");
+let opam_version = attr("opam-version");
 
 let opam =
   lift3(
