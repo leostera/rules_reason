@@ -1,5 +1,5 @@
-open Angstrom;
 open Result;
+open Angstrom;
 
 type dep;
 
@@ -42,11 +42,28 @@ let is_quote = is_char('"');
 let quote = char('"');
 let quoted = quote *> take_till(is_quote) <* quote <?> "Quoted text";
 
-let attr = name => blank *> label(name) *> spaces *> quoted <?> "Attr=" ++ name;
+let is_closed_bracket = is_char(']');
+let open_bracket = char('[');
+let closed_bracket = char(']');
+let bracketed = p =>
+  open_bracket *> many(p) <?> "List Elems" <* closed_bracket <?> "List";
 
-let name = attr("name");
-let version = attr("version");
-let opam_version = attr("opam-version");
+let attr = name => blank *> label(name) *> spaces <?> "Attr=" ++ name;
+
+let name = (attr("name") <?> "Name attribute") *> (quoted <?> "Name value");
+let version = attr("version") *> quoted;
+let opam_version = attr("opam-version") *> quoted;
+
+let dep_name = blank *> quoted <?> "Dep name";
+let dep_version = blank *> quoted <?> "Dep version";
+let dep =
+  lift2(
+    (name, version) => ({name, version}: Opam_file.dep),
+    dep_name,
+    dep_version,
+  );
+let depends: Angstrom.t(list(Opam_file.dep)) =
+  attr("depends") *> bracketed(dep);
 
 let opam =
   lift3(
@@ -58,6 +75,24 @@ let opam =
     opam_version,
   );
 
+let run2 = text =>
+  switch (parse_string(depends, text)) {
+  | Ok(deps) =>
+    List.iter(
+      (dep: Opam_file.dep) => {
+        print_string("name: " ++ dep.name);
+        print_newline();
+        print_string("version: " ++ dep.version);
+        print_newline();
+      },
+      deps,
+    )
+  | Error(m) =>
+    print_string("Failure => ");
+    print_string(m);
+    print_newline();
+  };
+
 let run = text =>
   switch (parse_string(opam, text)) {
   | Ok(opam_file) =>
@@ -66,7 +101,6 @@ let run = text =>
     print_string("version: " ++ opam_file.version);
     print_newline();
     print_string("opam-version: " ++ opam_file.opam_version);
-    print_newline();
     print_newline();
   | Error(m) =>
     print_string("Failure => ");
