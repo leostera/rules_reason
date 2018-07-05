@@ -42,20 +42,39 @@ let is_quote = is_char('"');
 let quote = char('"');
 let quoted = quote *> take_till(is_quote) <* quote <?> "Quoted text";
 
-let is_closed_bracket = is_char(']');
 let open_bracket = char('[');
 let closed_bracket = char(']');
 let bracketed = p =>
-  open_bracket *> many(p) <?> "List Elems" <* closed_bracket <?> "List";
+  open_bracket
+  *> blank
+  *> many_till(p <?> "List Elems", closed_bracket)
+  <* blank
+  <?> "List";
+
+let is_closed_brace = is_char('}');
+let open_brace = char('{');
+let closed_brace = char('}');
+let braced = p =>
+  open_brace
+  *> blank
+  *> p
+  <?> "Braced Elem"
+  <* closed_brace
+  <* blank
+  <?> "Braced";
 
 let attr = name => blank *> label(name) *> spaces <?> "Attr=" ++ name;
 
-let name = (attr("name") <?> "Name attribute") *> (quoted <?> "Name value");
+let name = (attr("name") <?> "Name attribute") *> quoted <?> "Name value";
 let version = attr("version") *> quoted;
 let opam_version = attr("opam-version") *> quoted;
 
+let semver_constraint = string("=") <?> "Semver Constraint";
+let semver =
+  spaces *> semver_constraint *> spaces *> quoted <?> "Semver String";
+
 let dep_name = blank *> quoted <?> "Dep name";
-let dep_version = blank *> quoted <?> "Dep version";
+let dep_version = blank *> braced(semver) <?> "Dep version";
 let dep =
   lift2(
     (name, version) => ({name, version}: Opam_file.dep),
