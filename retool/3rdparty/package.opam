@@ -1,6 +1,6 @@
-opam-version: "1.2"
 name: "retool"
 version: "HEAD"
+opam-version: "1.2"
 depends: [
   "cmdliner" {= "1.0.2"}
   "angstrom" {= "0.10.0"}
