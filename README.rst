@@ -17,9 +17,7 @@ A collection of OCaml, ReasonML, and BuckleScript rules and tools for Bazel.
 
 This projet relies on two prerequisites:
 
-1. ``nix``, the purely functional package manager, which is used for installing
-  the ReasonML tooling (``refmt`` specifically), ``opam``, ``yarn`` and ``node``
-  in an hermetic-ish fashion. At least you don't need to handle those yourself :)
+1. ``nix``, the purely functional package manager, which is used for installing the ReasonML tooling (``refmt`` specifically), ``opam``, ``yarn`` and ``node`` in an hermetic-ish fashion. At least you don't need to handle those yourself :)
 #. ``bazel``, naturally.
 
 
