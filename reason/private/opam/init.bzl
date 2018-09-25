@@ -47,7 +47,7 @@ ocamlrun = rule(
     executable=True)
 
 
-def init_opam(ocaml_version="4.03.2+buckle-master"):
+def init_opam(ocaml_version="4.02.3+buckle-master"):
     """
     Macro to initialize opam with the given OCaml version and extract the necessary
     binaries and archives for the toolchain.
