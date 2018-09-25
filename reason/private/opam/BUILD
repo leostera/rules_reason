@@ -19,7 +19,7 @@ genrule(
       mkdir -p $$abs_pkg_root;
 
       # initialize opam
-      OPAMROOT=$$abs_pkg_root $$opam init --comp 4.03.0;
+      OPAMROOT=$$abs_pkg_root $$opam init --comp 4.03.2+buckle-master;
 
       # package the opam root
       tar --transform "s=$$pkg_root/==g" \
@@ -47,7 +47,7 @@ genrule(
           --file $(location :opam_root.tar) \
           --directory $(@D);
 
-      ocaml_root=$$(pwd)/$(@D)/4.03.0
+      ocaml_root=$$(pwd)/$(@D)/4.03.2+buckle-master
 
       cp -f $$ocaml_root/bin/ocamlc.opt   $(@D)/ocamlc.opt;
       cp -f $$ocaml_root/bin/ocamldep.opt $(@D)/ocamldep.opt;
@@ -55,8 +55,8 @@ genrule(
       cp -f $$ocaml_root/bin/ocamlrun $(@D)/ocamlrun;
 
       # pack ml stdlib preserving paths
-      tar --transform "s=$(@D)/4.03.0/==g" \
-          --create $(@D)/4.03.0/lib/* \
+      tar --transform "s=$(@D)/4.03.2+buckle-master/==g" \
+          --create $(@D)/4.03.0+buckle-master/lib/* \
           --dereference \
           > $(location ocaml_stdlib.tar);
 
