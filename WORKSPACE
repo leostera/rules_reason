@@ -10,7 +10,7 @@ load(
 )
 
 bazel_repositories(
-    bazel_version = "0.15.0",
+    bazel_version = "0.15.2",
     bazel_sha256 = "",
     rules_go_version = "436452edc29a2f1e0edc22d180fbb57c27e6d0af",
     rules_go_sha256 = "09669ffc724b21ab3ee8fd58c8b52b27dd216552add9098daf16e0f1d3654626",
@@ -35,8 +35,8 @@ load(
 )
 
 nix_repositories(
-    nix_sha256 = "28121f6eb3d6c5b4c1fc9f716953ce8b0a793b841d0e9de095977b3ade06f92d",
-    nix_version = "20a78f74f8ac70d1099ff0d214cd00b25820da03",
+    nix_sha256 = "c4ca88951f59e443b430f1532ae2a875c45643206590f7fa90c905a952b764bc",
+    nix_version = "b83e0d09ab0819480ce3ec8d57d2673d6270c3c3",
 )
 
 ###
@@ -49,10 +49,10 @@ load(
 )
 
 reason_register_toolchains(
-    bs_sha256 = "db3f37eb27bc1653c3045e97adaa83e800dff55ce093d78ddfe85e85165e2125",
-    bs_version = "939ef1e1e874c80ff9df74b16dab1dbe2e2df289",
-    nixpkgs_revision = "d91a8a6ece07f5a6df82aa5dc02030d9c6724c27",
-    nixpkgs_sha256 = "0c5291bcf7d909cc4b18a24effef03f717d6374de377f91324725c646d494857",
+    bs_sha256 = "45d8a93a68976d01b62e373b9fda2d8b839bd6610e3d9820e146cab9882b4561",
+    bs_version = "3904b20a4036370b40617019f716f6fef02ae0b6",
+    nixpkgs_revision = "5a12a5bd5735b52e98f583d35ecb690902fa7c09",
+    nixpkgs_sha256 = "363747f9acb14fc8a6c0dcaef29da6f87693a59a5ff0adcbe7cd811d20503eb5",
 )
 
 ###
