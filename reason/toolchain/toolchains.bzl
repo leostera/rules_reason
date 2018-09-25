@@ -45,39 +45,6 @@ genrule(
   )
 """
 
-REASON_BUILD_FILE = """
-filegroup(
-    name = "bin",
-    srcs = glob([ "**/bin/*" ]),
-    )
-
-genrule(
-  visibility = ["//visibility:public"],
-  name = "unpack_binaries",
-  cmd = \"\"\"\
-  #!/bin/bash
-
-  # Copy binaries to the output location
-  cp external/reason-cli/bin/* $$(dirname $(location :refmt));
-
-  \"\"\",
-  srcs = [ ":bin" ],
-  outs = [
-        "menhir_error_processor",
-        "reactjs_jsx_ppx_v2",
-        "refmt",
-        "rtop_init.ml",
-        "ocamlmerlin-reason",
-        "reactjs_jsx_ppx_v3",
-        "refmttype",
-        "testOprint",
-        "ppx_react",
-        "rebuild",
-        "rtop",
-      ]
-  )
-"""
-
 BS_BUILD_FILE = """
 filegroup(
     visibility = ["//visibility:public"],
@@ -148,13 +115,6 @@ def _declare_toolchain_repositories(
             bin_path="node/bin/node",
             bin_name="node",
         ),
-        repository="@reason-nixpkgs",
-    )
-
-    nixpkgs_package(
-        name="reason-cli",
-        attribute_path="ocamlPackages.reason",
-        build_file_content=REASON_BUILD_FILE,
         repository="@reason-nixpkgs",
     )
 
