@@ -160,45 +160,12 @@ ML sources into native or bytecode binaries, and yes you can use your
     )
 
 
-Top-level
-~~~~~~~~~~~~
-
-You can access the ``rtop`` by running:
-
-.. code:: bash
-
-  ostera/rules_reasonml/examples λ bazel run @reason//:rtop
-  (23:54:08) INFO: Current date is 2018-06-20
-  (23:54:08) INFO: Analysed target @reason//:rtop (0 packages loaded).
-  (23:54:08) INFO: Found 1 target...
-  Target @reason//:rtop up-to-date:
-    bazel-genfiles/external/reason/rtop
-  (23:54:09) INFO: Elapsed time: 0.241s, Critical Path: 0.00s
-  (23:54:09) INFO: 0 processes.
-  (23:54:09) INFO: Build completed successfully, 1 total action
-  (23:54:09) INFO: Build completed successfully, 1 total action
-  ──────────────┬──────────────────────────────────────────────────────────────┬──────────────
-                │ Welcome to utop version 1.19.3 (using OCaml version 4.05.0)! │
-                └──────────────────────────────────────────────────────────────┘
-
-                     ___  _______   ________  _  __
-                    / _ \/ __/ _ | / __/ __ \/ |/ /
-                   / , _/ _// __ |_\ \/ /_/ /    /
-                  /_/|_/___/_/ |_/___/\____/_/|_/
-
-    Execute statements/let bindings. Hit <enter> after the semicolon. Ctrl-d to quit.
-
-          >   let myVar = "Hello Reason!";
-          >   let myList: list(string) = ["first", "second"];
-          >   #use "./src/myFile.re"; /* loads the file into here */
-
-  Type #utop_help for help about using utop.
-
-  Reason #
-
 What's next?
 ------------
 
+In no particular order:
+
+#. DevFlow: Top-Level
 #. DevFlow: Dependencies
 #. DevFlow: Generating Merlin and pointing IDEs to the right places
 #. Rules: ``*_test``
